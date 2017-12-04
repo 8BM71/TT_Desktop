@@ -14,6 +14,11 @@ CONFIG(debug, debug|release) {
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+
+INCLUDEPATH += include
+
+HEADERS +=
+
 SOURCES += src/main.cpp
 
 RESOURCES += ui/qml.qrc
@@ -28,3 +33,4 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
