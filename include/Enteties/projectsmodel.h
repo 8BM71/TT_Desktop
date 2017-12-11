@@ -27,8 +27,10 @@ public:
     virtual QHash<int, QByteArray> roleNames() const override;
 
     int count() const;
+    void clearModel();
+    ProjectPtr getItem(const QString &id);
 
-    void addItem(const QString &id, const QString &name, const QString &workscpace);
+    void addItem(const QString &id, const QString &name, const QString &workscpaceId);
     void removeItem(const QString &id);
     void removeItem(const int index);
 
