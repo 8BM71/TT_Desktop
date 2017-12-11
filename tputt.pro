@@ -1,4 +1,5 @@
 QT += quick
+QT += quick core network
 CONFIG += c++11
 
 CONFIG(debug, debug|release) {
