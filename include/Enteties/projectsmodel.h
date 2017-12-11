@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 #include "items.h"
 
-namespace Entities {
+namespace Enteties {
 
 class ProjectsModel : public QAbstractListModel
 {

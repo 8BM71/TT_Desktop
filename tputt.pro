@@ -17,14 +17,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += \
         include \
-        include/Entities
+        include/Enteties
 
 HEADERS += \
-    include/Entities/projectsmodel.h \
-    include/Entities/items.h
+        $$files(include/*.h) \
+        $$files(include/Enteties/*.h) \
+    include/Entities/tasksmodel.h
 
-SOURCES += src/main.cpp \
-    src/Entities/projectsmodel.cpp
+SOURCES += \
+        $$files(src/*.cpp) \
+        $$files(src/Enteties/*.cpp) \
+    src/Entities/tasksmodel.cpp
 
 RESOURCES += ui/qml.qrc
 

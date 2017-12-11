@@ -1,6 +1,6 @@
 #include "projectsmodel.h"
 
-namespace Entities {
+namespace Enteties {
 
 ProjectsModel::ProjectsModel(QObject *parent)
     : QAbstractListModel(parent)
