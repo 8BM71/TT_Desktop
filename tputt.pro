@@ -21,13 +21,11 @@ INCLUDEPATH += \
 
 HEADERS += \
         $$files(include/*.h) \
-        $$files(include/Enteties/*.h) \
-    include/Entities/tasksmodel.h
+        $$files(include/Enteties/*.h)
 
 SOURCES += \
         $$files(src/*.cpp) \
-        $$files(src/Enteties/*.cpp) \
-    src/Entities/tasksmodel.cpp
+        $$files(src/Enteties/*.cpp)
 
 RESOURCES += ui/qml.qrc
 

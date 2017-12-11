@@ -5,6 +5,7 @@ namespace Enteties {
 
 ProjectsModel::ProjectsModel(QObject *parent)
     : QAbstractListModel(parent)
+    , m_count(0)
 {
 
 }
