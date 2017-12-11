@@ -1,27 +1,27 @@
-#include "workspacesmodel.h"
+#include "timeentriesmodel.h"
 #include <QUuid>
 
 namespace Enteties {
 
-WorkspacesModel::WorkspacesModel(QObject *parent)
+TimeEntriesModel::TimeEntriesModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_count(0)
 {
 
 }
 
-WorkspacesModel::~WorkspacesModel()
+TimeEntriesModel::~TimeEntriesModel()
 {
 
 }
 
-int WorkspacesModel::rowCount(const QModelIndex &parent) const
+int TimeEntriesModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return m_items.count();
 }
 
-QVariant WorkspacesModel::data(const QModelIndex &index, int role) const
+QVariant TimeEntriesModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() < 0 || index.row() > count())
         return QVariant();
@@ -30,31 +30,37 @@ QVariant WorkspacesModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case ItemIdRole:
         return item->id;
-    case NameRole:
-        return item->name;
-    case OwnerRole:
-        return item->ownerId;
+    case TaskId:
+        return item->taskId;
+    case DurationRole:
+        return item->duration;
+    case StartDateRole:
+        return item->startDate;
+    case EndDateRole:
+        return item->endDate;
     default:
         return QVariant();
     }
 }
 
-QHash<int, QByteArray> WorkspacesModel::roleNames() const
+QHash<int, QByteArray> TimeEntriesModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles.insert(ItemIdRole, "itemId");
-    roles.insert(NameRole, "name");
-    roles.insert(OwnerRole, "owner");
+    roles.insert(TaskId, "task");
+    roles.insert(DurationRole, "duration");
+    roles.insert(StartDateRole, "startDate");
+    roles.insert(EndDateRole, "endDate");
 
     return roles;
 }
 
-int WorkspacesModel::count() const
+int TimeEntriesModel::count() const
 {
     return m_count;
 }
 
-void WorkspacesModel::clearModel()
+void TimeEntriesModel::clearModel()
 {
     if(!count())
         return;
@@ -66,7 +72,7 @@ void WorkspacesModel::clearModel()
     emit countChanged(count());
 }
 
-WorkspacePtr WorkspacesModel::getItem(const QString &id)
+TimeEntryPtr TimeEntriesModel::getItem(const QString &id)
 {
     for (auto item : m_items)
     {
@@ -76,20 +82,22 @@ WorkspacePtr WorkspacesModel::getItem(const QString &id)
     return nullptr;
 }
 
-void WorkspacesModel::addItem(const QString &id, const QString &name, const QString &ownerId)
+void TimeEntriesModel::addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &endDate, const QString &duration)
 {
-    auto newItem = std::make_shared<Workspace>();
+    auto newItem = std::make_shared<TimeEntry>();
     newItem->id = id == "" ? QUuid::createUuid().toString()
                            : id;
-    newItem->name = name;
-    newItem->ownerId = ownerId;
+    newItem->taskId = taskId;
+    newItem->startDate = startDate;
+    newItem->endDate = endDate;
+    newItem->duration = duration;
 
     beginInsertRows(QModelIndex(), count(), count());
     m_items.append(newItem);
     endInsertRows();
 }
 
-void WorkspacesModel::removeItem(const QString &id)
+void TimeEntriesModel::removeItem(const QString &id)
 {
     for(int i = 0; i < count(); i++)
     {
@@ -98,10 +106,10 @@ void WorkspacesModel::removeItem(const QString &id)
     }
 }
 
-void WorkspacesModel::removeItem(const int index)
+void TimeEntriesModel::removeItem(const int index)
 {
     if(index < 0 || index >= count())
-            return;
+        return;
 
     beginRemoveRows(QModelIndex(), index, index);
     m_items.removeAt(index);

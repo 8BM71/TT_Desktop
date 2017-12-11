@@ -8,7 +8,7 @@ namespace Enteties {
 
 struct TimeEntry {
     QString id;
-    int duration;
+    QString duration;
     QString startDate;
     QString endDate;
     QString taskId;
