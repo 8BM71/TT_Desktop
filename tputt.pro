@@ -15,11 +15,16 @@ CONFIG(debug, debug|release) {
 DEFINES += QT_DEPRECATED_WARNINGS
 
 
-INCLUDEPATH += include
+INCLUDEPATH += \
+        include \
+        include/Entities
 
-HEADERS +=
+HEADERS += \
+    include/Entities/projectsmodel.h \
+    include/Entities/items.h
 
-SOURCES += src/main.cpp
+SOURCES += src/main.cpp \
+    src/Entities/projectsmodel.cpp
 
 RESOURCES += ui/qml.qrc
 
