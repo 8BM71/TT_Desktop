@@ -15,11 +15,17 @@ CONFIG(debug, debug|release) {
 DEFINES += QT_DEPRECATED_WARNINGS
 
 
-INCLUDEPATH += include
+INCLUDEPATH += \
+        include \
+        include/Enteties
 
-HEADERS +=
+HEADERS += \
+        $$files(include/*.h) \
+        $$files(include/Enteties/*.h)
 
-SOURCES += src/main.cpp
+SOURCES += \
+        $$files(src/*.cpp) \
+        $$files(src/Enteties/*.cpp)
 
 RESOURCES += ui/qml.qrc
 
