@@ -1,33 +1,38 @@
 #include "webservice.h"
 #include <QTimer>
 #include <QDebug>
-#include <memory>
 
-WebService::WebService(QObject *parent) : QObject(parent)
+WebService::WebService(QObject *parent)
+    : QObject(parent)
+    , m_waitTime(30 * 1000)
 {
 
 }
 
-void WebService::getRequest(const QNetworkRequest &request)
+void WebService::getRequest(const QNetworkRequest &request, PerformCallback callback)
 {
     auto reply = m_manager.get(request);
-    requestFunction(reply);
+    requestFunction(reply, callback);
 }
 
-void WebService::postRequest(const QNetworkRequest &request, const QByteArray &data)
+void WebService::postRequest(const QNetworkRequest &request, const QByteArray &data, PerformCallback callback)
 {
     auto reply = m_manager.post(request, data);
-    requestFunction(reply);
+    requestFunction(reply, callback);
 }
 
-void WebService::requestFunction(QNetworkReply *reply)
+void WebService::requestFunction(QNetworkReply *reply, PerformCallback callback)
 {
     if (reply == nullptr)
     {
-        //TODO: handle error
+        ResponsePtr resp = std::make_shared<Response>();
+        resp->isError = true;
+        resp->errorString = "Reply is nullptr";
+        callback(resp);
+        return;
     }
 
-    std::shared_ptr<QTimer> timer = std::make_shared<QTimer>;
+    std::shared_ptr<QTimer> timer = std::make_shared<QTimer>();
 
     timer->setInterval(m_waitTime);
     timer->setSingleShot(true);
@@ -37,28 +42,37 @@ void WebService::requestFunction(QNetworkReply *reply)
 
     timer->start();
 
-    connect(reply, &QNetworkReply::finished, [this, reply, timer] (){
+    connect(reply, &QNetworkReply::finished, [this, reply, timer, callback] (){
         timer->stop();
+
+        ResponsePtr response = std::make_shared<Response>();
 
         if (reply == nullptr)
         {
-            //TODO: handle error
+            response->isError = true;
+            response->errorString = "Reply is nullptr";
+            callback(response);
+            return;
         }
 
         if (reply->error() != QNetworkReply::NoError)
         {
-            //TODO: error
+            response->isError = true;
+            response->errorString = reply->errorString();
         }
         else
         {
-
+            for (auto it : reply->rawHeaderPairs())
+            {
+                QString name(it.first);
+                QString data(it.second);
+                response->headerData.insert(name, data);
+            }
+            response->data = reply->readAll();
         }
-
+        callback(response);
         reply->deleteLater();
-
-
     });
-
 }
 
 

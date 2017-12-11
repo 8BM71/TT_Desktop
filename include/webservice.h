@@ -5,6 +5,21 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <functional>
+#include <memory>
+
+struct Response
+{
+    bool isError = false;
+    QString errorString = "";
+    int statusCode = 0;
+    QByteArray data;
+    QMap<QString, QString> headerData;
+};
+
+typedef std::shared_ptr<Response> ResponsePtr;
+
+typedef std::function<void(ResponsePtr)> PerformCallback;
 
 class WebService : public QObject
 {
@@ -12,27 +27,29 @@ class WebService : public QObject
 public:
     explicit WebService(QObject *parent = nullptr);
 
-    void getAllWorkspaces();
+//    void getAllWorkspaces();
 
-    void getWorkspaceById();
+//    void getWorkspaceById();
 
-    void getAllProjects();
+//    void getAllProjects();
 
-    void getProjectById();
+//    void getProjectById();
 
-    void getAllTasks();
+//    void getAllTasks();
 
-    void getTaskById();
+//    void getTaskById();
 
-    void getTimeEntries();
+//    void getTimeEntries();
 
-    void createWorkspace();
+//    void createWorkspace();
 
-    void createProject();
+//    void createProject();
 
-    void createTask();
+//    void createTask();
 
-    void createTimeEntry();
+//    void createTimeEntry();
+
+    //TODO: authorization
 
 signals:
 
@@ -40,11 +57,11 @@ public slots:
 
 
 private:
-    void getRequest(const QNetworkRequest& request);
+    void getRequest(const QNetworkRequest& request, PerformCallback callback);
 
-    void postRequest(const QNetworkRequest& request, const QByteArray& data);
+    void postRequest(const QNetworkRequest& request, const QByteArray& data, PerformCallback callback);
 
-    void requestFunction(QNetworkReply * reply);
+    void requestFunction(QNetworkReply * reply, PerformCallback callback);
 
 private:
     QNetworkAccessManager m_manager;
