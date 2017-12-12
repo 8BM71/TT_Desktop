@@ -13,25 +13,20 @@ ApplicationWindow {
     height: 600
     title: qsTr("tpu-tt")
 
-    property int appTheme: Material.Light
-    property int appAccent: Material.LightBlue
+    property bool logined: true
+    property alias settings: settingsItem
 
-    property bool logined: false
-
-    Material.theme: appTheme
-    Material.accent: appAccent
+    Material.theme: settings.theme
+    Material.accent: settings.accent
 
     property Scale uiScale: Scale {
         xScale: window.width / 1920
         yScale: window.height / 1080
     }
 
-    Drawer {
-        id: drawer
-        width: 0.66 * window.width
-        height: window.height
+    Settings {
+        id: settingsItem
     }
-
 
     Navigator {
         stackView: bodyItem
