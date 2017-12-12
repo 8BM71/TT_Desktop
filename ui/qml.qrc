@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>qtquickcontrols2.conf</file>
         <file>Navigator.qml</file>
         <file>Pages/Start.qml</file>
         <file>Pages/TimeLine.qml</file>
@@ -9,5 +8,7 @@
         <file>Pages/Projects.qml</file>
         <file>Pages/Tasks.qml</file>
         <file>Pages/Settings.qml</file>
+        <file>Components/MenuBar.qml</file>
+        <file>qtquickcontrols2.conf</file>
     </qresource>
 </RCC>
