@@ -31,25 +31,25 @@ class WebService : public QObject
 public:
     explicit WebService(QObject *parent = nullptr);
 
-    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel);
+    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, std::function<void(bool)> successCallback);
 
 //    void getWorkspaceById();
 
-    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel);
+    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel, std::function<void(bool)> successCallback); //TODO: add success callback or signal
 
 //    void getProjectById();
 
-    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel);
+    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel); //TODO: add success callback or signal
 
 //    void getTaskById();
 
 //    void getTimeEntries();
 
-//    void createWorkspace();
+    void createWorkspace(const QString &name, const QString &ownerId); //TODO: add success callback or signal
 
-//    void createProject();
+    void createProject(const QString &name, const QString &workspaceId); //TODO: add success callback or signal
 
-//    void createTask();
+    void createTask(const QString &projectId);
 
 //    void createTimeEntry();
 
@@ -63,7 +63,7 @@ public slots:
 private:
     void getRequest(const QNetworkRequest& request, PerformCallback callback);
 
-    void postRequest(const QNetworkRequest& request, const QByteArray& data, PerformCallback callback);
+    void postRequest(const QString &query, PerformCallback callback);
 
     void requestFunction(QNetworkReply * reply, PerformCallback callback);
 

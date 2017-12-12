@@ -18,11 +18,26 @@ int main(int argc, char *argv[])
     QString userId = "42cfb602-f544-4b1b-b01d-63cd6a0b644f";
 
     WebService service;
-    service.getAllWorkspaces(userId, model);
 
-    service.getAllProjects(userId, projectModel);
+//    service.createWorkspace("myOwnWorkspace1", userId);
 
-    service.getAllTasks(userId, taskModel);
+    service.getAllWorkspaces(userId, model, [&service, model](bool success){
+        if (success)
+        {
+//            service.createProject("myOwnProject", model->getItem(0)->id);
+        }
+    });
+
+    service.getAllProjects(userId, projectModel, [&service, projectModel] (bool success) {
+        if (success)
+        {
+//            auto project = projectModel->getItem(0);
+//            if (project)
+//                service.createTask(project->id);
+        }
+    });
+
+//    service.getAllTasks(userId, taskModel);
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

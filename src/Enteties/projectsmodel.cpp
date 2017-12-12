@@ -78,6 +78,13 @@ ProjectPtr ProjectsModel::getItem(const QString &id)
     return nullptr;
 }
 
+ProjectPtr ProjectsModel::getItem(const int index)
+{
+    if(index < 0 || index >= count())
+        return nullptr;
+    return m_items.at(index);
+}
+
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
 {
     auto newItem = std::make_shared<Project>();

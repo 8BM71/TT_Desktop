@@ -76,6 +76,13 @@ WorkspacePtr WorkspacesModel::getItem(const QString &id)
     return nullptr;
 }
 
+WorkspacePtr WorkspacesModel::getItem(const int index)
+{
+    if(index < 0 || index >= count())
+            return nullptr;
+    return m_items.at(index);
+}
+
 void WorkspacesModel::addItem(const QString &id, const QString &name, const QString &ownerId)
 {
     auto newItem = std::make_shared<Workspace>();

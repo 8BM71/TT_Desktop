@@ -15,28 +15,18 @@ WebService::WebService(QObject *parent)
     m_host = "http://localhost:8080";
 }
 
-void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel)
+void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, std::function<void (bool)> successCallback)
 {
-    QString requestUrl(m_host + "/graphql");
-
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
                                 "id name ownerId}"
                             "}").arg(ownerId);
-    QJsonObject requestObject
-    {
-        {"query", QJsonValue(query)}
-    };
 
-    QJsonDocument doc(requestObject);
-
-    QNetworkRequest request;
-    request.setUrl(requestUrl);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    postRequest(request, doc.toJson(), [this, workspaceModel, ownerId](ResponsePtr resp) {
+    postRequest(query, [this, workspaceModel, ownerId, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
             qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false);
         }
         else
         {
@@ -62,6 +52,7 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
                             workspaceModel->addItem(id, name, ownerId);
                         }
                     }
+                    successCallback(true);
                     qCDebug(webService) << "Workspace model updated" << workspaceModel->count();
                 }
             }
@@ -69,30 +60,20 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
     });
 }
 
-void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel)
+void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel, std::function<void (bool)> successCallback)
 {
-    QString requestUrl(m_host + "/graphql");
-
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
                                 "id projects {"
                                     "id name}"
                                 "}"
                             "}").arg(ownerId);
-    QJsonObject requestObject
-    {
-        {"query", QJsonValue(query)}
-    };
 
-    QJsonDocument doc(requestObject);
-
-    QNetworkRequest request;
-    request.setUrl(requestUrl);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    postRequest(request, doc.toJson(), [this, projectsModel](ResponsePtr resp) {
+    postRequest(query, [this, projectsModel, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
             qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false);
         }
         else
         {
@@ -128,7 +109,8 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
                             }
                         }
                     }
-                    qCDebug(webService) << "Workspace model updated" << projectsModel->count();
+                    successCallback(true);
+                    qCDebug(webService) << "Projects model updated" << projectsModel->count();
                 }
             }
         }
@@ -137,8 +119,6 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
 
 void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel)
 {
-    QString requestUrl(m_host + "/graphql");
-
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
                                 "id projects {"
@@ -147,17 +127,8 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::T
                                     "}"
                                 "}"
                             "}").arg(ownerId);
-    QJsonObject requestObject
-    {
-        {"query", QJsonValue(query)}
-    };
 
-    QJsonDocument doc(requestObject);
-
-    QNetworkRequest request;
-    request.setUrl(requestUrl);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    postRequest(request, doc.toJson(), [this, taskModel](ResponsePtr resp) {
+    postRequest(query, [this, taskModel](ResponsePtr resp) {
         if (resp->isError)
         {
             qCDebug(webService) << "Request error" <<  resp->errorString;
@@ -205,7 +176,117 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::T
                             }
                         }
                     }
-                    qCDebug(webService) << "Workspace model updated" << taskModel->count();
+                    qCDebug(webService) << "Tasks model updated" << taskModel->count();
+                }
+            }
+        }
+    });
+}
+
+void WebService::createWorkspace(const QString &name, const QString &ownerId)
+{
+    QString query = QString("mutation M {"
+                            "createWorkspace(name: \"%1\", ownerId: \"%2\") {"
+                                "id name ownerId}"
+                            "}").arg(name).arg(ownerId);
+
+    postRequest(query, [this](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            qCDebug(webService) << "Request error" <<  resp->errorString;
+        }
+        else
+        {
+            qCDebug(webService) << "Request status code" << resp->statusCode;
+            if (resp->statusCode == 200)
+            {
+//                qCDebug(webService) << resp->data;
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("createWorkspace").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString id = resultObject.value("id").toString("");
+                        QString name = resultObject.value("name").toString("");
+                        qCDebug(webService) << QString("Workspace '%1' created with id %2").arg(name).arg(id);
+                    }
+                }
+            }
+        }
+    });
+}
+
+void WebService::createProject(const QString &name, const QString &workspaceId)
+{
+    QString query = QString("mutation M {"
+                            "createProject(name: \"%1\", wsId: \"%2\") {"
+                                "id name}"
+                            "}").arg(name).arg(workspaceId);
+
+    postRequest(query, [this](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            qCDebug(webService) << "Request error" <<  resp->errorString;
+        }
+        else
+        {
+            qCDebug(webService) << "Request status code" << resp->statusCode;
+            if (resp->statusCode == 200)
+            {
+//                qCDebug(webService) << resp->data;
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("createProject").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString id = resultObject.value("id").toString("");
+                        QString name = resultObject.value("name").toString("");
+                        qCDebug(webService) << QString("Project '%1' created with id %2").arg(name).arg(id);
+                    }
+                }
+            }
+        }
+    });
+}
+
+void WebService::createTask(const QString &projectId)
+{
+    QString query = QString("mutation M {"
+                            "createTask(projId: \"%1\") {"
+                                "id}"
+                            "}").arg(projectId);
+
+    postRequest(query, [this](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            qCDebug(webService) << "Request error" <<  resp->errorString;
+        }
+        else
+        {
+            qCDebug(webService) << "Request status code" << resp->statusCode;
+            if (resp->statusCode == 200)
+            {
+//                qCDebug(webService) << resp->data;
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("createTask").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString id = resultObject.value("id").toString("");
+                        qCDebug(webService) << QString("Task created with id %1").arg(id);
+                    }
                 }
             }
         }
@@ -218,9 +299,23 @@ void WebService::getRequest(const QNetworkRequest &request, PerformCallback call
     requestFunction(reply, callback);
 }
 
-void WebService::postRequest(const QNetworkRequest &request, const QByteArray &data, PerformCallback callback)
+void WebService::postRequest(const QString &query, PerformCallback callback)
 {
-    auto reply = m_manager.post(request, data);
+    QString requestUrl(m_host + "/graphql");
+
+    QJsonObject requestObject
+    {
+        {"query", QJsonValue(query)}
+    };
+
+    QJsonDocument doc(requestObject);
+
+    QNetworkRequest request;
+    request.setUrl(requestUrl);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+
+
+    auto reply = m_manager.post(request, doc.toJson());
     requestFunction(reply, callback);
 }
 

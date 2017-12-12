@@ -29,6 +29,8 @@ public:
     void clearModel();
     ProjectPtr getItem(const QString &id);
 
+    ProjectPtr getItem(const int index);
+
     void addItem(const QString &id, const QString &name, const QString &workscpaceId);
     void removeItem(const QString &id);
     void removeItem(const int index);
