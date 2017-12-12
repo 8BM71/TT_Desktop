@@ -36,7 +36,6 @@ signals:
     void countChanged(int count);
 
 private:
-    int m_count;
     QList<WorkspacePtr> m_items;
 };
 

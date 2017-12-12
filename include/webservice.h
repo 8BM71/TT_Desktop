@@ -8,6 +8,10 @@
 #include <functional>
 #include <memory>
 
+#include "workspacesmodel.h"
+#include "projectsmodel.h"
+#include "tasksmodel.h"
+
 struct Response
 {
     bool isError = false;
@@ -27,15 +31,15 @@ class WebService : public QObject
 public:
     explicit WebService(QObject *parent = nullptr);
 
-//    void getAllWorkspaces();
+    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel);
 
 //    void getWorkspaceById();
 
-//    void getAllProjects();
+    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel);
 
 //    void getProjectById();
 
-//    void getAllTasks();
+    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel);
 
 //    void getTaskById();
 

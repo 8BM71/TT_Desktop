@@ -1,11 +1,11 @@
 #include "workspacesmodel.h"
 #include <QUuid>
+#include <QDebug>
 
 namespace Enteties {
 
 WorkspacesModel::WorkspacesModel(QObject *parent)
     : QAbstractListModel(parent)
-    , m_count(0)
 {
 
 }
@@ -18,7 +18,7 @@ WorkspacesModel::~WorkspacesModel()
 int WorkspacesModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_items.count();
+    return count();
 }
 
 QVariant WorkspacesModel::data(const QModelIndex &index, int role) const
@@ -51,7 +51,7 @@ QHash<int, QByteArray> WorkspacesModel::roleNames() const
 
 int WorkspacesModel::count() const
 {
-    return m_count;
+    return m_items.size();
 }
 
 void WorkspacesModel::clearModel()

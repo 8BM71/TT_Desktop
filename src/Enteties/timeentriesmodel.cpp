@@ -5,7 +5,6 @@ namespace Enteties {
 
 TimeEntriesModel::TimeEntriesModel(QObject *parent)
     : QAbstractListModel(parent)
-    , m_count(0)
 {
 
 }
@@ -18,7 +17,7 @@ TimeEntriesModel::~TimeEntriesModel()
 int TimeEntriesModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_items.count();
+    return count();
 }
 
 QVariant TimeEntriesModel::data(const QModelIndex &index, int role) const
@@ -57,7 +56,7 @@ QHash<int, QByteArray> TimeEntriesModel::roleNames() const
 
 int TimeEntriesModel::count() const
 {
-    return m_count;
+    return m_items.size();
 }
 
 void TimeEntriesModel::clearModel()

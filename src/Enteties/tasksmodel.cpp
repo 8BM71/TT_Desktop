@@ -5,7 +5,6 @@ namespace Enteties {
 
 TasksModel::TasksModel(QObject *parent)
     : QAbstractListModel(parent)
-    , m_count(0)
 {
 
 }
@@ -18,7 +17,7 @@ TasksModel::~TasksModel()
 int TasksModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_items.count();
+    return count();
 }
 
 QVariant TasksModel::data(const QModelIndex &index, int role) const
@@ -54,7 +53,7 @@ QHash<int, QByteArray> TasksModel::roleNames() const
 
 int TasksModel::count() const
 {
-    return m_count;
+    return m_items.size();
 }
 
 void TasksModel::clearModel()

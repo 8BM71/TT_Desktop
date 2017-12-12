@@ -10,7 +10,6 @@ class ProjectsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-
 public:
     enum Roles{
         ItemIdRole = Qt::UserRole + 1,
@@ -38,7 +37,6 @@ signals:
     void countChanged(int count);
 
 private:
-    int m_count;
     QList<ProjectPtr> m_items;
 };
 
