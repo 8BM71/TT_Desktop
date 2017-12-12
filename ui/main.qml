@@ -9,19 +9,26 @@ import "qrc:/Components"
 ApplicationWindow {
     id: window
     visible: true
+
+    minimumWidth: 400
+    minimumHeight: 380
     width: 800
     height: 600
-    title: qsTr("tpu-tt")
+
+    title: Application.name
 
     property bool logined: true
     property alias settings: settingsItem
 
     Material.theme: settings.theme
     Material.accent: settings.accent
+    Material.primary: settings.primary
+    Material.foreground: settings.foreground
+    //Material.background: settings.background
 
     property Scale uiScale: Scale {
-        xScale: window.width / 1920
-        yScale: window.height / 1080
+        xScale: window.width / 800
+        yScale: window.height / 600
     }
 
     Settings {
@@ -79,22 +86,18 @@ ApplicationWindow {
         }
 
         header: ToolBar {
-            height: 150 * uiScale.yScale
-            Material.accent: Material.Orange
-            Material.background: Material.Teal
+            height: 60 /** uiScale.yScale*/
             Material.elevation: 1
         }
     }
 
     MenuBar {
         id: menuBar
-        width: 400 * uiScale.xScale
         anchors {
             left: parent.left
             top: parent.top
             bottom: parent.bottom
         }
-
     }
 
     property var startPage: null
