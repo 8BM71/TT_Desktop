@@ -30,14 +30,14 @@ Item {
                     checked: true
                     onCheckedChanged: {
                         if(checked)
-                            appTheme = Material.Light
+                            settings.theme = Material.Light
                     }
                 }
                 RadioButton {
                     text: qsTr("Dark");
                     onCheckedChanged: {
                         if(checked)
-                            appTheme = Material.Dark
+                            settings.theme = Material.Dark
                     }
                 }
             }
@@ -49,7 +49,7 @@ Item {
                     text: qsTr("Orange")
                     onCheckedChanged: {
                         if(checked)
-                            appAccent = Material.Orange
+                            settings.accent = Material.Orange
                     }
                 }
                 RadioButton {
@@ -57,21 +57,21 @@ Item {
 
                     onCheckedChanged: {
                         if(checked)
-                            appAccent = Material.Red
+                            settings.accent = Material.Red
                     }
                 }
                 RadioButton {
                     text: qsTr("Blue");
                     onCheckedChanged: {
                         if(checked)
-                            appAccent = Material.Blue
+                            settings.accent = Material.Blue
                     }
                 }
                 RadioButton {
                     text: qsTr("Grey");
                     onCheckedChanged: {
                         if(checked)
-                            appAccent = Material.Grey
+                            settings.accent = Material.Grey
                     }
                 }
             }

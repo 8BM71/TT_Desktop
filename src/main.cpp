@@ -9,6 +9,11 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    QCoreApplication::setApplicationName("TimeTracker");
+    QCoreApplication::setOrganizationName("TPU");
+    QCoreApplication::setOrganizationDomain("tttpu.tk");
+
     QGuiApplication app(argc, argv);
 
     std::shared_ptr<Enteties::WorkspacesModel> model(new Enteties::WorkspacesModel);

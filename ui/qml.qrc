@@ -10,5 +10,13 @@
         <file>Pages/Settings.qml</file>
         <file>Components/MenuBar.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>Resources/icons/add-circular-outlined-button.svg</file>
+        <file>Resources/icons/cube-of-notes-stack.svg</file>
+        <file>Resources/icons/folder-outline.svg</file>
+        <file>Resources/icons/gear-outlined-symbol.svg</file>
+        <file>Resources/icons/images-square-outlined-interface-button-symbol.svg</file>
+        <file>Resources/icons/timer-timing-tool.svg</file>
+        <file>Resources/icons/clipboard-square-symbol.svg</file>
+        <file>Components/Settings.qml</file>
     </qresource>
 </RCC>
