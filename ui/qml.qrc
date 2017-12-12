@@ -18,5 +18,9 @@
         <file>Resources/icons/timer-timing-tool.svg</file>
         <file>Resources/icons/clipboard-square-symbol.svg</file>
         <file>Components/Settings.qml</file>
+        <file>Components/MenuItemDelegate.qml</file>
+        <file>Components/WorkspaceItemDelegate.qml</file>
+        <file>Components/ProjectItemDelegate.qml</file>
+        <file>Resources/icons/double-right-arrows-angles.svg</file>
     </qresource>
 </RCC>
