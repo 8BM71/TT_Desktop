@@ -67,6 +67,8 @@ private:
 
     void requestFunction(QNetworkReply * reply, PerformCallback callback);
 
+
+
 private:
     QNetworkAccessManager m_manager;
     QString m_host;
