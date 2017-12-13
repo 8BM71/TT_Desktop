@@ -15,7 +15,11 @@ WebService::WebService(QObject *parent)
     m_host = "http://localhost:8080";
 }
 
-void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, std::function<void (bool)> successCallback)
+WebService::~WebService()
+{
+}
+
+void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -25,15 +29,12 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
     postRequest(query, [this, workspaceModel, ownerId, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
-            successCallback(false);
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -41,7 +42,7 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
                 if (!dataObject.isEmpty())
                 {
                     QJsonArray workspaceArray = dataObject.value("workspaces").toArray(QJsonArray());
-                    workspaceModel->clearModel(); //NOTE: надо ли прям очищать
+                    workspaceModel->clearModel();
                     for (auto workspaceValue : workspaceArray)
                     {
                         if (workspaceValue.isObject())
@@ -52,15 +53,18 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
                             workspaceModel->addItem(id, name, ownerId);
                         }
                     }
-                    successCallback(true);
-                    qCDebug(webService) << "Workspace model updated" << workspaceModel->count();
+                    successCallback(true, "Workspace model updated");
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }
 
-void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel, std::function<void (bool)> successCallback)
+void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -69,18 +73,15 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
                                 "}"
                             "}").arg(ownerId);
 
-    postRequest(query, [this, projectsModel, successCallback](ResponsePtr resp) {
+    postRequest(query, [this, projectModel, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
-            successCallback(false);
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -88,7 +89,7 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
                 if (!dataObject.isEmpty())
                 {
                     QJsonArray workspaceArray = dataObject.value("workspaces").toArray(QJsonArray());
-                    projectsModel->clearModel();
+                    projectModel->clearModel();
                     for (auto workspaceValue : workspaceArray)
                     {
                         if (workspaceValue.isObject())
@@ -104,20 +105,23 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
                                     QJsonObject project = projectValue.toObject();
                                     QString projectId = project.value("id").toString("");
                                     QString projectName = project.value("name").toString("");
-                                    projectsModel->addItem(projectId, projectName, workspaceId);
+                                    projectModel->addItem(projectId, projectName, workspaceId);
                                 }
                             }
                         }
                     }
-                    successCallback(true);
-                    qCDebug(webService) << "Projects model updated" << projectsModel->count();
+                    successCallback(true, "Project model updated");
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }
 
-void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel)
+void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -128,17 +132,15 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::T
                                 "}"
                             "}").arg(ownerId);
 
-    postRequest(query, [this, taskModel](ResponsePtr resp) {
+    postRequest(query, [this, taskModel, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -176,31 +178,33 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::T
                             }
                         }
                     }
-                    qCDebug(webService) << "Tasks model updated" << taskModel->count();
+                    successCallback(true, "Task model updated");
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }
 
-void WebService::createWorkspace(const QString &name, const QString &ownerId)
+void WebService::createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createWorkspace(name: \"%1\", ownerId: \"%2\") {"
                                 "id name ownerId}"
                             "}").arg(name).arg(ownerId);
 
-    postRequest(query, [this](ResponsePtr resp) {
+    postRequest(query, [this, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -212,32 +216,34 @@ void WebService::createWorkspace(const QString &name, const QString &ownerId)
                     {
                         QString id = resultObject.value("id").toString("");
                         QString name = resultObject.value("name").toString("");
-                        qCDebug(webService) << QString("Workspace '%1' created with id %2").arg(name).arg(id);
+                        successCallback(true, QString("Workspace '%1' created with id %2").arg(name).arg(id));
                     }
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }
 
-void WebService::createProject(const QString &name, const QString &workspaceId)
+void WebService::createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createProject(name: \"%1\", wsId: \"%2\") {"
                                 "id name}"
                             "}").arg(name).arg(workspaceId);
 
-    postRequest(query, [this](ResponsePtr resp) {
+    postRequest(query, [this, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -249,32 +255,35 @@ void WebService::createProject(const QString &name, const QString &workspaceId)
                     {
                         QString id = resultObject.value("id").toString("");
                         QString name = resultObject.value("name").toString("");
-                        qCDebug(webService) << QString("Project '%1' created with id %2").arg(name).arg(id);
+                        successCallback(true, QString("Project '%1' created with id %2").arg(name).arg(id));
                     }
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
+
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }
 
-void WebService::createTask(const QString &projectId)
+void WebService::createTask(const QString &projectId, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createTask(projId: \"%1\") {"
                                 "id}"
                             "}").arg(projectId);
 
-    postRequest(query, [this](ResponsePtr resp) {
+    postRequest(query, [this, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
-            qCDebug(webService) << "Request error" <<  resp->errorString;
+            successCallback(false, resp->errorString);
         }
         else
         {
-            qCDebug(webService) << "Request status code" << resp->statusCode;
             if (resp->statusCode == 200)
             {
-//                qCDebug(webService) << resp->data;
                 QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
                         .object()
                         .value("data")
@@ -285,10 +294,14 @@ void WebService::createTask(const QString &projectId)
                     if (!resultObject.isEmpty())
                     {
                         QString id = resultObject.value("id").toString("");
-                        qCDebug(webService) << QString("Task created with id %1").arg(id);
+                        successCallback(true, QString("Task created with id %1").arg(id));
                     }
                 }
+                else
+                    successCallback(false, "Incorrect response from server");
             }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
 }

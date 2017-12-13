@@ -23,33 +23,35 @@ struct Response
 
 typedef std::shared_ptr<Response> ResponsePtr;
 
-typedef std::function<void(ResponsePtr)> PerformCallback;
+typedef std::function<void (ResponsePtr)> PerformCallback;
+typedef std::function<void (bool, QString)> SuccessCallback;
 
 class WebService : public QObject
 {
     Q_OBJECT
 public:
     explicit WebService(QObject *parent = nullptr);
+    ~WebService();
 
-    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, std::function<void(bool)> successCallback);
+    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, SuccessCallback successCallback);
 
 //    void getWorkspaceById();
 
-    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectsModel, std::function<void(bool)> successCallback); //TODO: add success callback or signal
+    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectModel, SuccessCallback successCallback);
 
 //    void getProjectById();
 
-    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel); //TODO: add success callback or signal
+    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback);
 
 //    void getTaskById();
 
 //    void getTimeEntries();
 
-    void createWorkspace(const QString &name, const QString &ownerId); //TODO: add success callback or signal
+    void createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback);
 
-    void createProject(const QString &name, const QString &workspaceId); //TODO: add success callback or signal
+    void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
 
-    void createTask(const QString &projectId);
+    void createTask(const QString &projectId, SuccessCallback successCallback);
 
 //    void createTimeEntry();
 
