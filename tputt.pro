@@ -22,13 +22,11 @@ INCLUDEPATH += \
 
 HEADERS += \
         $$files(include/*.h) \
-        $$files(include/Enteties/*.h) \
-    include/logiccore.h
+        $$files(include/Enteties/*.h)
 
 SOURCES += \
         $$files(src/*.cpp) \
-        $$files(src/Enteties/*.cpp) \
-    src/logiccore.cpp
+        $$files(src/Enteties/*.cpp)
 
 RESOURCES += ui/qml.qrc
 
