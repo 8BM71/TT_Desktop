@@ -62,14 +62,14 @@ Item {
     Component {
         id: workspacesPageComponent
         Workspaces {
-            model: workspacesModel
+            model: core.workspacesModel
         }
     }
 
     Component {
         id: projectsPageComponent
         Projects {
-            model: projectModel
+            model: core.projectsModel
         }
     }
 

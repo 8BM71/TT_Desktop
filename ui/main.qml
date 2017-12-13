@@ -116,7 +116,7 @@ ApplicationWindow {
                 width: parent.width * 0.3
 
                 textRole: "name"
-                model: projectModel
+                model: core.projectsModel
             }
 
             ToolButton {
