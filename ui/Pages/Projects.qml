@@ -25,7 +25,7 @@ Item {
             height: 50 /** uiScale.yScale*/
 
             name: model.name
-            totalTime: model.totalTime
+            //totalTime: model.totalTime
 
             onRemove: {
                 //remove(model.id)
