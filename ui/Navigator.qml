@@ -62,20 +62,14 @@ Item {
     Component {
         id: workspacesPageComponent
         Workspaces {
-            Label {
-                anchors.centerIn: parent
-                text: parent.objectName
-            }
+            model: workspacesModel
         }
     }
 
     Component {
         id: projectsPageComponent
         Projects {
-            Label {
-                anchors.centerIn: parent
-                text: parent.objectName
-            }
+            model: projectModel
         }
     }
 

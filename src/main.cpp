@@ -1,5 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+
 #include "workspacesmodel.h"
 #include "projectsmodel.h"
 #include "tasksmodel.h"
@@ -24,27 +26,45 @@ int main(int argc, char *argv[])
 
     WebService service;
 
-//    service.createWorkspace("myOwnWorkspace1", userId);
+//    service.createWorkspace("Study", userId, [&service, model, projectModel, userId](bool success, QString info){
+//        if (success)
+//        {
+//            service.getAllWorkspaces(userId, model, [&service, model, projectModel, userId](bool success, QString info){
+//                if (success)
+//                {
+//                    for(int i = 1; i < 5; i++ )
+//                        service.createProject("TPU #" + QString::number(i), model->getItem(0)->id,[&service,projectModel, userId](bool success, QString info){
+//                        });
+//                }
+//            });
 
-    service.getAllWorkspaces(userId, model, [&service, model](bool success, QString info){
-        if (success)
-        {
-//            service.createProject("myOwnProject", model->getItem(0)->id);
-        }
-    });
 
-    service.getAllProjects(userId, projectModel, [&service, projectModel] (bool success, QString info) {
-        if (success)
-        {
-//            auto project = projectModel->getItem(0);
-//            if (project)
-//                service.createTask(project->id);
-        }
-    });
+//        }
+//    });
+
 
 //    service.getAllTasks(userId, taskModel);
 
+
+    service.getAllWorkspaces(userId, model, [&service, model, projectModel, userId](bool success, QString info){
+        if (success)
+        {
+//            for(int i = 1; i < 5; i++ )
+//            service.createProject("project #" + QString::number(i), model->getItem(0)->id,[&service,projectModel, userId](bool success, QString info){
+//            });
+
+            service.getAllProjects(userId, projectModel, [&service, projectModel] (bool success, QString info) {
+            });
+        }
+    });
+
+
     QQmlApplicationEngine engine;
+
+    QQmlContext* rootContext = engine.rootContext();
+    rootContext->setContextProperty("projectModel", projectModel.get());
+    rootContext->setContextProperty("workspacesModel", model.get());
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
