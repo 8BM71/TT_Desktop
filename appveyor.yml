@@ -1,2 +1,17 @@
-version: build{build}
+version: 0.0.0.{build}
 image: Visual Studio 2015
+
+
+environment:
+  QTDIR: C:\Qt\5.9.1\msvc2015
+  VSPATH: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
+  TOOLSDIR: C\Qt\Tools\QtCreator
+
+before_build:
+  - set PATH=%PATH%;%QTDIR%\bin;%VSPATH%\bin;%TOOLSDIR%\bin
+  - mkdir build
+
+build_script:
+  - cd build
+  - qmake ../tputt.pro -spec win32-msvc
+  - jom
