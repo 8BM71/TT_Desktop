@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
 
 //    service.createWorkspace("myOwnWorkspace1", userId);
 
-    service.getAllWorkspaces(userId, model, [&service, model](bool success){
+    service.getAllWorkspaces(userId, model, [&service, model](bool success, QString info){
         if (success)
         {
 //            service.createProject("myOwnProject", model->getItem(0)->id);
         }
     });
 
-    service.getAllProjects(userId, projectModel, [&service, projectModel] (bool success) {
+    service.getAllProjects(userId, projectModel, [&service, projectModel] (bool success, QString info) {
         if (success)
         {
 //            auto project = projectModel->getItem(0);
