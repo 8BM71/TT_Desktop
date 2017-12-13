@@ -5,7 +5,6 @@ namespace Enteties {
 
 ProjectsModel::ProjectsModel(QObject *parent)
     : QAbstractListModel(parent)
-    , m_count(0)
 {
 
 }
@@ -18,7 +17,7 @@ ProjectsModel::~ProjectsModel()
 int ProjectsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return m_items.count();
+    return count();
 }
 
 QVariant ProjectsModel::data(const QModelIndex &index, int role) const
@@ -54,7 +53,7 @@ QHash<int, QByteArray> ProjectsModel::roleNames() const
 
 int ProjectsModel::count() const
 {
-    return m_count;
+    return m_items.size();
 }
 
 void ProjectsModel::clearModel()
@@ -77,6 +76,13 @@ ProjectPtr ProjectsModel::getItem(const QString &id)
             return item;
     }
     return nullptr;
+}
+
+ProjectPtr ProjectsModel::getItem(const int index)
+{
+    if(index < 0 || index >= count())
+        return nullptr;
+    return m_items.at(index);
 }
 
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)

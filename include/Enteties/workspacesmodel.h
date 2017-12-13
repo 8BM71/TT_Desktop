@@ -28,6 +28,8 @@ public:
     void clearModel();
     WorkspacePtr getItem(const QString &id);
 
+    WorkspacePtr getItem(const int index);
+
     void addItem(const QString &id, const QString &name, const QString &ownerId);
     void removeItem(const QString &id);
     void removeItem(const int index);
@@ -36,7 +38,6 @@ signals:
     void countChanged(int count);
 
 private:
-    int m_count;
     QList<WorkspacePtr> m_items;
 };
 

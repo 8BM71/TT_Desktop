@@ -37,7 +37,6 @@ signals:
     void countChanged(int count);
 
 private:
-    int m_count;
     QList<TaskPtr> m_items;
 
 };

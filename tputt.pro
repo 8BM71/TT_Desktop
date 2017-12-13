@@ -1,4 +1,5 @@
 QT += quick
+QT += quick core network
 CONFIG += c++11
 
 CONFIG(debug, debug|release) {
@@ -21,11 +22,13 @@ INCLUDEPATH += \
 
 HEADERS += \
         $$files(include/*.h) \
-        $$files(include/Enteties/*.h)
+        $$files(include/Enteties/*.h) \
+    include/logiccore.h
 
 SOURCES += \
         $$files(src/*.cpp) \
-        $$files(src/Enteties/*.cpp)
+        $$files(src/Enteties/*.cpp) \
+    src/logiccore.cpp
 
 RESOURCES += ui/qml.qrc
 
@@ -39,4 +42,6 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
 
