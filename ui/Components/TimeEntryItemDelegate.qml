@@ -6,7 +6,11 @@ import QtGraphicalEffects 1.0
 Item {
     id: root
 
-    property alias name: nameLabel.text
+    property alias taskName: taskNameLabel.text
+    property alias projectName: projectNameLabel.text
+    property alias duration: durationLabel.text
+    property var startTime
+    property var endTime
 
     Pane {
         anchors.fill: parent
@@ -14,21 +18,62 @@ Item {
     }
 
     Label {
-        id: nameLabel
-
+        id: taskNameLabel
         anchors {
-            top: parent.top
             left: parent.left
-            bottom: parent.bottom
-            margins: 10
+            verticalCenter: parent.verticalCenter
+            leftMargin: 10
+            right: projectNameLabel.left
+            rightMargin: 10
         }
-
-        verticalAlignment: Label.AlignVCenter
-        clip: true
-        elide: Label.ElideRight
-
-        width: parent.width * 0.6
 
     }
 
+    Label {
+        id: projectNameLabel
+
+        anchors {
+            right: durationLabel.left
+            verticalCenter: parent.verticalCenter
+            rightMargin: 10
+        }
+
+
+    }
+
+    Label {
+        id: durationLabel
+
+        anchors {
+            right: resumeButton.left
+            verticalCenter: parent.verticalCenter
+            rightMargin: 10
+        }
+
+        verticalAlignment: Label.AlignVCenter
+
+    }
+
+    RoundButton {
+        id: resumeButton
+        anchors {
+            right: parent.right
+            rightMargin: 10
+            verticalCenter: parent.verticalCenter
+        }
+        width: 40
+        height: width
+
+//        Image {
+//            id: resumeIcon
+//            source: "file"
+//        }
+//        ColorOverlay {
+
+//        }
+    }
+
+    MouseArea {
+
+    }
 }

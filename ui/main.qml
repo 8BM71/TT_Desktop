@@ -85,54 +85,8 @@ ApplicationWindow {
             }
         }
 
-        header: ToolBar {
-            height: 60 /** uiScale.yScale*/
-            Material.elevation: 1
+        header: TimerLine {
 
-            TextField {
-                id: newTaskName
-                anchors {
-                    left: parent.left
-                    top: parent.top
-                    bottom: parent.bottom
-                    leftMargin: 15
-                    margins: 5
-                }
-
-                placeholderText: qsTr("New task...")
-
-                width: parent.width * 0.5
-            }
-
-            ComboBox {
-                id: projectsComboBox
-                anchors {
-                    left: newTaskName.right
-                    top: parent.top
-                    bottom: parent.bottom
-                    margins: 5
-                }
-
-                width: parent.width * 0.3
-
-                textRole: "name"
-                model: core.projectsModel
-            }
-
-            ToolButton {
-                anchors {
-                    left: projectsComboBox.right
-                    top: parent.top
-                    bottom: parent.bottom
-                    right: parent.right
-                    margins: 5
-                }
-
-                text: qsTr("Start")
-                onClicked: {
-                    core.startNewTask(newTaskName.text, projectsComboBox.currentIndex)
-                }
-            }
         }
     }
 

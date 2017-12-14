@@ -24,7 +24,7 @@ Item {
         switch(root.currentPage) {
         case 0:
             if(!popByName("TimeLinePage"))
-                root.stackView.push(timeLinePageComponent)
+                root.stackView.push(timeStoryPageComponent)
             break
         case 1:
             if(!popByName("WorkspacesPage"))
@@ -44,19 +44,17 @@ Item {
             break
         default:
             if(!popByName("TimeLinePage"))
-                root.stackView.push(timeLinePageComponent)
+                root.stackView.push(timeStoryPageComponent)
             break
         }
     }
 
     Component {
-        id: timeLinePageComponent
-        TimeLine {
-//            Label {
-//                anchors.centerIn: parent
-//                text: parent.objectName
-//            }
-            model: core.timeEntriesModel//core.tasksModel
+        id: timeStoryPageComponent
+        TimeStory {
+            taskModel: core.tasksModel
+            timeEntryModel: core.timeEntriesModel
+            projectModel: core.projectsModel
         }
     }
 
