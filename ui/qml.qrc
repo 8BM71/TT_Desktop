@@ -3,7 +3,6 @@
         <file>main.qml</file>
         <file>Navigator.qml</file>
         <file>Pages/Start.qml</file>
-        <file>Pages/TimeLine.qml</file>
         <file>Pages/Workspaces.qml</file>
         <file>Pages/Projects.qml</file>
         <file>Pages/Tasks.qml</file>
@@ -25,5 +24,9 @@
         <file>Resources/icons/recycling-bin.svg</file>
         <file>Components/TimeEntryItemDelegate.qml</file>
         <file>Components/MessageDialog.qml</file>
+        <file>Pages/TimeStory.qml</file>
+        <file>Components/TimerLine.qml</file>
+        <file>Resources/icons/play-button.svg</file>
+        <file>Resources/icons/stop.svg</file>
     </qresource>
 </RCC>
