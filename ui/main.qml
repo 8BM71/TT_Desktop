@@ -129,6 +129,9 @@ ApplicationWindow {
                 }
 
                 text: qsTr("Start")
+                onClicked: {
+                    core.startNewTask(newTaskName.text, projectsComboBox.currentIndex)
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 #include "logiccore.h"
 #include <QDebug>
 #include <QLoggingCategory>
+#include <QMetaType>
 
 Q_LOGGING_CATEGORY(logicCore, "LogicCore")
 
@@ -42,8 +43,15 @@ TimeEntriesModel *LogicCore::timeEntriesModel() const
     return m_timeEntriesModel.get();
 }
 
-void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
+void LogicCore::startNewTask(const QString &taskName, int projectIndex)
 {
+    auto project = m_projectModel->getItem(projectIndex);
+    if (project == nullptr)
+        return;
+    QString projectId = project->id;
+    m_webService.createTask(taskName, projectId, m_tasksModel, [](bool success, QString info){
+        qCDebug(logicCore) << QString("Create task success: %0, info: %1").arg(success).arg(info);
+    });
 }
 
 void LogicCore::startExistTask()

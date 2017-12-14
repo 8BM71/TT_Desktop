@@ -23,5 +23,6 @@
         <file>Components/ProjectItemDelegate.qml</file>
         <file>Resources/icons/double-right-arrows-angles.svg</file>
         <file>Resources/icons/recycling-bin.svg</file>
+        <file>Components/TimeEntryItemDelegate.qml</file>
     </qresource>
 </RCC>

@@ -42,7 +42,7 @@ signals:
 
 public slots:
     // Task, time entry methods
-    void startNewTask(const QString &taskName, const QString& projectId);
+    void startNewTask(const QString &taskName, int projectIndex);
 
     void startExistTask();
 

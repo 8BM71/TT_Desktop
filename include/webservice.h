@@ -51,7 +51,7 @@ public:
 
     void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
 
-    void createTask(const QString &projectId, SuccessCallback successCallback);
+    void createTask(const QString &name, const QString &projectId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback);
 
 //    void createTimeEntry();
 

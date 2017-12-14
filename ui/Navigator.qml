@@ -52,10 +52,11 @@ Item {
     Component {
         id: timeLinePageComponent
         TimeLine {
-            Label {
-                anchors.centerIn: parent
-                text: parent.objectName
-            }
+//            Label {
+//                anchors.centerIn: parent
+//                text: parent.objectName
+//            }
+            model: core.tasksModel
         }
     }
 

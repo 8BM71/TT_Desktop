@@ -268,14 +268,14 @@ void WebService::createProject(const QString &name, const QString &workspaceId, 
     });
 }
 
-void WebService::createTask(const QString &projectId, SuccessCallback successCallback)
+void WebService::createTask(const QString &name, const QString &projectId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
-                            "createTask(projId: \"%1\") {"
-                                "id}"
-                            "}").arg(projectId);
+                            "createTask(projId: \"%1\", name: \"%2\") {"
+                                "id name}"
+                            "}").arg(projectId).arg(name);
 
-    postRequest(query, [this, successCallback](ResponsePtr resp) {
+    postRequest(query, [this, successCallback, taskModel, projectId](ResponsePtr resp) {
         if (resp->isError)
         {
             successCallback(false, resp->errorString);
@@ -294,7 +294,9 @@ void WebService::createTask(const QString &projectId, SuccessCallback successCal
                     if (!resultObject.isEmpty())
                     {
                         QString id = resultObject.value("id").toString("");
-                        successCallback(true, QString("Task created with id %1").arg(id));
+                        QString taskName = resultObject.value("name").toString("");
+                        taskModel->addItem(id, projectId, taskName);
+                        successCallback(true, QString("Task %0 created with id %1").arg(taskName).arg(id));
                     }
                 }
                 else
