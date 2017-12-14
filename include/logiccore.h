@@ -77,7 +77,7 @@ public slots:
 
     void updateProject();
 
-    void deleteProject();
+    void deleteProject(const QString &projectId);
 
     void setProjectAsDefault();
     // !Project methods
@@ -88,7 +88,7 @@ public slots:
 
     void updateWorkspace();
 
-    void deleteWorkspace();
+    void deleteWorkspace(const QString &workspaceId);
 
     void setWorkspaceAsDefault();
     // !Workspace methods

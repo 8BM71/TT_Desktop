@@ -24,7 +24,7 @@ void WebService::getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr wor
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
-                                "id name ownerId}"
+                            "id name ownerId}"
                             "}").arg(ownerId);
 
     postRequest(query, [this, workspaceModel, ownerId, successCallback](ResponsePtr resp) {
@@ -69,9 +69,9 @@ void WebService::getAllProjects(const QString &ownerId, ProjectsModelPtr project
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
-                                "id projects {"
-                                    "id name}"
-                                "}"
+                            "id projects {"
+                            "id name}"
+                            "}"
                             "}").arg(ownerId);
 
     postRequest(query, [this, projectModel, successCallback](ResponsePtr resp) {
@@ -126,11 +126,11 @@ void WebService::getAllTasks(const QString &ownerId, TasksModelPtr taskModel, Su
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
-                                "id projects {"
-                                    "id tasks {"
-                                        "id name}"
-                                    "}"
-                                "}"
+                            "id projects {"
+                            "id tasks {"
+                            "id name}"
+                            "}"
+                            "}"
                             "}").arg(ownerId);
 
     postRequest(query, [this, taskModel, successCallback](ResponsePtr resp) {
@@ -195,11 +195,11 @@ void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr t
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
-                                "tasks {"
-                                    "id timeEntry {"
-                                        "id duration endDate startDate}"
-                                    "}"
-                                "}"
+                            "tasks {"
+                            "id timeEntry {"
+                            "id duration endDate startDate}"
+                            "}"
+                            "}"
                             "}").arg(ownerId);
 
     postRequest(query, [this, timeModel, successCallback](ResponsePtr resp) {
@@ -275,7 +275,7 @@ void WebService::createWorkspace(const QString &name, const QString &ownerId, Su
 {
     QString query = QString("mutation M {"
                             "createWorkspace(name: \"%1\", ownerId: \"%2\") {"
-                                "id name ownerId}"
+                            "id name ownerId}"
                             "}").arg(name).arg(ownerId);
 
     postRequest(query, [this, successCallback](ResponsePtr resp) {
@@ -310,11 +310,63 @@ void WebService::createWorkspace(const QString &name, const QString &ownerId, Su
     });
 }
 
+void WebService::deleteWorkspace(const QString &workspaceId, SuccessCallback successCallback)
+{
+    QString query = QString("mutation M {"
+                            "deleteWorkspace(wsId: \"%1\")"
+                            "}").arg(workspaceId);
+
+    postRequest(query, [this, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    if(dataObject.value("deleteWorkspace").toBool(false))
+                        successCallback(true, "Ok");
+                    else
+                    {
+                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                                .object()
+                                .value("errors")
+                                .toArray(QJsonArray());
+
+                        if(!errorArray.isEmpty())
+                        {
+                            QJsonObject errorObject = errorArray[0].toObject();
+                            QString message = errorObject.value("message").toString("Some error");
+                            successCallback(false, message);
+                        }
+                        else
+                        {
+                            successCallback(false, "Some error");
+                        }
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
+
 void WebService::createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createProject(name: \"%1\", wsId: \"%2\") {"
-                                "id name}"
+                            "id name}"
                             "}").arg(name).arg(workspaceId);
 
     postRequest(query, [this, successCallback](ResponsePtr resp) {
@@ -350,11 +402,64 @@ void WebService::createProject(const QString &name, const QString &workspaceId, 
     });
 }
 
+void WebService::deleteProject(const QString &projectId, SuccessCallback successCallback)
+{
+    QString query = QString("mutation M {"
+                            "deleteProject(projId: \"%1\")"
+                            "}").arg(projectId);
+
+    postRequest(query, [this, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+
+                    if(dataObject.value("deleteProject").toBool(false))
+                        successCallback(true, "Ok");
+                    else
+                    {
+                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                                .object()
+                                .value("errors")
+                                .toArray(QJsonArray());
+
+                        if(!errorArray.isEmpty())
+                        {
+                            QJsonObject errorObject = errorArray[0].toObject();
+                            QString message = errorObject.value("message").toString("Some error");
+                            successCallback(false, message);
+                        }
+                        else
+                        {
+                            successCallback(false, "Some error");
+                        }
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
+
 void WebService::createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createTask(projId: \"%1\", name: \"%2\") {"
-                                "id name timeEntry {id startDate}}"
+                            "id name timeEntry {id startDate}}"
                             "}").arg(projectId).arg(name);
 
     postRequest(query, [this, successCallback, taskModel, projectId, timeModel](ResponsePtr resp) {
@@ -501,17 +606,3 @@ void WebService::requestFunction(QNetworkReply *reply, PerformCallback callback)
         reply->deleteLater();
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

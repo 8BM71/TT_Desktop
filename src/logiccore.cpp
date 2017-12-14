@@ -120,10 +120,10 @@ void LogicCore::setProjectForTask()
 
 void LogicCore::createNewProject(const QString &name, const QString &workspaceId)
 {
-    m_webService.createProject(name, workspaceId, [this, name, workspaceId](bool success, QString info){
+    m_webService.createProject(name, workspaceId, [this, name, workspaceId](bool success, QString id){
         if(success)
         {
-            m_projectModel->addItem(info, name, workspaceId);
+            m_projectModel->addItem(id, name, workspaceId);
         }
     });
 }
@@ -138,9 +138,14 @@ void LogicCore::updateProject()
     //TODO: implement
 }
 
-void LogicCore::deleteProject()
+void LogicCore::deleteProject(const QString &projectId)
 {
-    //TODO: implement
+    m_webService.deleteProject(projectId, [this, projectId](bool success, QString info){
+        if(success)
+            m_projectModel->removeItem(projectId);
+        else
+            qCDebug(logicCore) << "Project delete error:" << info;
+    });
 }
 
 void LogicCore::setProjectAsDefault()
@@ -150,10 +155,10 @@ void LogicCore::setProjectAsDefault()
 
 void LogicCore::createNewWorkspace(const QString &name)
 {
-    m_webService.createWorkspace(name, m_currentUser.id, [this, name](bool success, QString info){
+    m_webService.createWorkspace(name, m_currentUser.id, [this, name](bool success, QString id){
         if(success)
         {
-            m_workspacesModel->addItem(info, name, m_currentUser.id);
+            m_workspacesModel->addItem(id, name, m_currentUser.id);
         }
     });
 }
@@ -163,9 +168,14 @@ void LogicCore::updateWorkspace()
     //TODO: implement
 }
 
-void LogicCore::deleteWorkspace()
+void LogicCore::deleteWorkspace(const QString &workspaceId)
 {
-    //TODO: implement
+    m_webService.deleteWorkspace(workspaceId, [this, workspaceId](bool success, QString info){
+        if(success)
+            m_workspacesModel->removeItem(workspaceId);
+        else
+            qCDebug(logicCore) << "Workspace delete error:" << info;
+    });
 }
 
 void LogicCore::setWorkspaceAsDefault()

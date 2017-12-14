@@ -46,7 +46,11 @@ public:
 
     void createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback);
 
+    void deleteWorkspace(const QString &workspaceId, SuccessCallback successCallback);
+
     void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
+
+    void deleteProject(const QString &projectId, SuccessCallback successCallback);
 
     void createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback);
 
