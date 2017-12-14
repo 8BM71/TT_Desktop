@@ -2,7 +2,7 @@
 #include <QUuid>
 #include <QDebug>
 
-namespace Enteties {
+namespace Entities {
 
 WorkspacesModel::WorkspacesModel(QObject *parent)
     : QAbstractListModel(parent)

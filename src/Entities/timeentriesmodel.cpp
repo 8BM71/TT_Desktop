@@ -1,7 +1,7 @@
 #include "timeentriesmodel.h"
 #include <QUuid>
 
-namespace Enteties {
+namespace Entities {
 
 TimeEntriesModel::TimeEntriesModel(QObject *parent)
     : QAbstractListModel(parent)

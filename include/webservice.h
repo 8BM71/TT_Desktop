@@ -33,15 +33,15 @@ public:
     explicit WebService(QObject *parent = nullptr);
     ~WebService();
 
-    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, SuccessCallback successCallback);
+    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Entities::WorkspacesModel> workspaceModel, SuccessCallback successCallback);
 
 //    void getWorkspaceById();
 
-    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectModel, SuccessCallback successCallback);
+    void getAllProjects(const QString &ownerId, std::shared_ptr<Entities::ProjectsModel> projectModel, SuccessCallback successCallback);
 
 //    void getProjectById();
 
-    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback);
+    void getAllTasks(const QString &ownerId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback);
 
 //    void getTaskById();
 
@@ -51,7 +51,7 @@ public:
 
     void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
 
-    void createTask(const QString &name, const QString &projectId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback);
+    void createTask(const QString &name, const QString &projectId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback);
 
 //    void createTimeEntry();
 

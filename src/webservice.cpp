@@ -12,14 +12,14 @@ WebService::WebService(QObject *parent)
     : QObject(parent)
     , m_waitTime(30 * 1000)
 {
-    m_host = "http://localhost:8080";
+    m_host = "http://85.143.77.75:8080";
 }
 
 WebService::~WebService()
 {
 }
 
-void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, SuccessCallback successCallback)
+void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Entities::WorkspacesModel> workspaceModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -64,7 +64,7 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteti
     });
 }
 
-void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectModel, SuccessCallback successCallback)
+void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Entities::ProjectsModel> projectModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -121,7 +121,7 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Enteties
     });
 }
 
-void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback)
+void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -268,7 +268,7 @@ void WebService::createProject(const QString &name, const QString &workspaceId, 
     });
 }
 
-void WebService::createTask(const QString &name, const QString &projectId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback)
+void WebService::createTask(const QString &name, const QString &projectId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createTask(projId: \"%1\", name: \"%2\") {"

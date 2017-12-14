@@ -4,7 +4,7 @@
 #include <QString>
 #include <memory>
 
-namespace Enteties {
+namespace Entities {
 
 struct TimeEntry {
     QString id;

@@ -1,25 +1,27 @@
-#ifndef TASKSMODEL_H
-#define TASKSMODEL_H
+#ifndef TIMEENTRIESMODEL_H
+#define TIMEENTRIESMODEL_H
 
 #include <QAbstractListModel>
 #include "items.h"
 
-namespace Enteties {
+namespace Entities {
 
-class TasksModel : public QAbstractListModel
+class TimeEntriesModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+
 public:
     enum Roles{
         ItemIdRole = Qt::UserRole + 1,
-        NameRole,
-        DescriptionRole,
-        ProjectRole
+        DurationRole,
+        StartDateRole,
+        EndDateRole,
+        TaskId
     };
 
-    explicit TasksModel(QObject *parent = nullptr);
-    ~TasksModel();
+    explicit TimeEntriesModel(QObject *parent = nullptr);
+    ~TimeEntriesModel();
 
     virtual int rowCount(const QModelIndex &parent) const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -27,9 +29,9 @@ public:
 
     int count() const;
     void clearModel();
-    TaskPtr getItem(const QString &id);
+    TimeEntryPtr getItem(const QString &id);
 
-    void addItem(const QString &id, const QString &projectId, const QString &name, const QString &description = "");
+    void addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &endDate = "", const QString &duration = "");
     void removeItem(const QString &id);
     void removeItem(const int index);
 
@@ -37,10 +39,9 @@ signals:
     void countChanged(int count);
 
 private:
-    QList<TaskPtr> m_items;
-
+    QList<TimeEntryPtr> m_items;
 };
 
 }
 
-#endif // TASKSMODEL_H
+#endif // TIMEENTRIESMODEL_H

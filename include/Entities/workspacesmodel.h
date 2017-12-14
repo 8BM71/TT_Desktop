@@ -1,12 +1,12 @@
-#ifndef PROJECTSMODEL_H
-#define PROJECTSMODEL_H
+#ifndef WORKSPACESMODEL_H
+#define WORKSPACESMODEL_H
 
 #include <QAbstractListModel>
 #include "items.h"
 
-namespace Enteties {
+namespace Entities {
 
-class ProjectsModel : public QAbstractListModel
+class WorkspacesModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -14,12 +14,11 @@ public:
     enum Roles{
         ItemIdRole = Qt::UserRole + 1,
         NameRole,
-        DescriptionRole,
-        WorkspaceRole
+        OwnerRole
     };
 
-    explicit ProjectsModel(QObject *parent = nullptr);
-    ~ProjectsModel();
+    explicit WorkspacesModel(QObject *parent = nullptr);
+    ~WorkspacesModel();
 
     virtual int rowCount(const QModelIndex &parent) const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -27,11 +26,11 @@ public:
 
     int count() const;
     void clearModel();
-    ProjectPtr getItem(const QString &id);
+    WorkspacePtr getItem(const QString &id);
 
-    ProjectPtr getItem(const int index);
+    WorkspacePtr getItem(const int index);
 
-    void addItem(const QString &id, const QString &name, const QString &workscpaceId);
+    void addItem(const QString &id, const QString &name, const QString &ownerId);
     void removeItem(const QString &id);
     void removeItem(const int index);
 
@@ -39,8 +38,9 @@ signals:
     void countChanged(int count);
 
 private:
-    QList<ProjectPtr> m_items;
+    QList<WorkspacePtr> m_items;
 };
 
 }
-#endif // PROJECTSMODEL_H
+
+#endif // WORKSPACESMODEL_H

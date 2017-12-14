@@ -1,26 +1,26 @@
-#include "tasksmodel.h"
+#include "projectsmodel.h"
 #include <QUuid>
 
-namespace Enteties {
+namespace Entities {
 
-TasksModel::TasksModel(QObject *parent)
+ProjectsModel::ProjectsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
 
 }
 
-TasksModel::~TasksModel()
+ProjectsModel::~ProjectsModel()
 {
 
 }
 
-int TasksModel::rowCount(const QModelIndex &parent) const
+int ProjectsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return count();
 }
 
-QVariant TasksModel::data(const QModelIndex &index, int role) const
+QVariant ProjectsModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() < 0 || index.row() > count())
         return QVariant();
@@ -33,30 +33,30 @@ QVariant TasksModel::data(const QModelIndex &index, int role) const
         return item->name;
     case DescriptionRole:
         return item->description;
-    case ProjectRole:
-        return item->projectId;
+    case WorkspaceRole:
+        return item->workspaceId;
     default:
         return QVariant();
     }
 }
 
-QHash<int, QByteArray> TasksModel::roleNames() const
+QHash<int, QByteArray> ProjectsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles.insert(ItemIdRole, "itemId");
     roles.insert(NameRole, "name");
     roles.insert(DescriptionRole, "description");
-    roles.insert(ProjectRole, "project");
+    roles.insert(WorkspaceRole, "workspace");
 
     return roles;
 }
 
-int TasksModel::count() const
+int ProjectsModel::count() const
 {
     return m_items.size();
 }
 
-void TasksModel::clearModel()
+void ProjectsModel::clearModel()
 {
     if(!count())
         return;
@@ -68,7 +68,7 @@ void TasksModel::clearModel()
     emit countChanged(count());
 }
 
-TaskPtr TasksModel::getItem(const QString &id)
+ProjectPtr ProjectsModel::getItem(const QString &id)
 {
     for (auto item : m_items)
     {
@@ -78,21 +78,28 @@ TaskPtr TasksModel::getItem(const QString &id)
     return nullptr;
 }
 
-void TasksModel::addItem(const QString &id, const QString &projectId, const QString &name, const QString &description)
+ProjectPtr ProjectsModel::getItem(const int index)
 {
-    auto newItem = std::make_shared<Task>();
+    if(index < 0 || index >= count())
+        return nullptr;
+    return m_items.at(index);
+}
+
+void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
+{
+    auto newItem = std::make_shared<Project>();
     newItem->id = id == "" ? QUuid::createUuid().toString()
                            : id;
     newItem->name = name;
-    newItem->projectId = projectId;
-    newItem->description = description;
+    newItem->workspaceId = workscpaceId;
+    newItem->description = "";
 
     beginInsertRows(QModelIndex(), count(), count());
     m_items.append(newItem);
     endInsertRows();
 }
 
-void TasksModel::removeItem(const QString &id)
+void ProjectsModel::removeItem(const QString &id)
 {
     for(int i = 0; i < count(); i++)
     {
@@ -101,7 +108,7 @@ void TasksModel::removeItem(const QString &id)
     }
 }
 
-void TasksModel::removeItem(const int index)
+void ProjectsModel::removeItem(const int index)
 {
     if(index < 0 || index >= count())
         return;
@@ -112,5 +119,6 @@ void TasksModel::removeItem(const int index)
 
     emit countChanged(count());
 }
+
 
 }

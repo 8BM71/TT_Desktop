@@ -9,7 +9,7 @@
 #include "tasksmodel.h"
 #include "timeentriesmodel.h"
 
-using namespace Enteties;
+using namespace Entities;
 
 class LogicCore : public QObject
 {
@@ -92,7 +92,7 @@ private:
 
 private:
     WebService m_webService;
-    Enteties::User m_currentUser;
+    Entities::User m_currentUser;
     std::shared_ptr<WorkspacesModel> m_workspacesModel;
     std::shared_ptr<ProjectsModel> m_projectModel;
     std::shared_ptr<TasksModel> m_tasksModel;
