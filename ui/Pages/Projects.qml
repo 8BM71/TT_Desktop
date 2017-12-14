@@ -65,22 +65,23 @@ Item {
                                                                   })
             }
 
-//            onPopupMenu: {
-//                if (contextMenu)
-//                    contextMenu.destroy();
+            onRename: {
+                if (renameProjectDialog)
+                    renameProjectDialog.destroy();
 
+                renameProjectDialog = renameProjectDialogComponent.createObject(root,
+                                                                                {
+                                                                                    "projectName": model.name,
+                                                                                    "projectId": model.itemId
+                                                                                })
+            }
 
-//                var point = projectDelegateItem.mapToItem(null, mX, mY);
-//                console.debug(mX, mY, point.x, point.y)
+            onNewProject: {
+                if (newProjectDialog)
+                    newProjectDialog.destroy();
 
-//                contextMenu = contextMenuComponent.createObject(root,
-//                                                                {
-//                                                                    "x": point.x,
-//                                                                    "y": point.y,
-//                                                                    "projectName": model.name,
-//                                                                    "projectId": model.itemId
-//                                                                })
-//            }
+                newProjectDialog = newProjectDialogComponent.createObject(root)
+            }
         }
 
         ScrollIndicator.vertical: ScrollIndicator { }
@@ -98,7 +99,10 @@ Item {
         font.pointSize: 16
         highlighted: true
         onClicked: {
+            if (newProjectDialog)
+                newProjectDialog.destroy();
 
+            newProjectDialog = newProjectDialogComponent.createObject(root)
         }
     }
 
@@ -134,6 +138,146 @@ Item {
             onClosed: {
                 removeDialog.destroy();
                 removeDialog = null;
+            }
+        }
+    }
+
+
+    property var newProjectDialog: null
+    Component {
+        id: newProjectDialogComponent
+        Dialog {
+            id: newProjectDialogItem
+            visible: true
+
+            property string projectName: ""
+            property string projectId: ""
+
+            title: qsTr("New project")
+
+            width: 400
+            height: 200
+
+            x: (parent.width - width) * 0.5
+            y: (parent.height - height) * 0.5
+
+            Item {
+                anchors {
+                    fill: parent
+                    topMargin: newProjectDialogItem.header.height
+                    bottomMargin: newProjectDialogItem.footer.height
+                }
+
+                TextField {
+                    id: newProjectTextField
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width * 0.5
+                    text: newProjectDialogItem.projectName
+                    placeholderText: qsTr("Enter the name..")
+                }
+
+                ComboBox {
+                    id: workspacesComboBox
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: newProjectTextField.right
+                        right: parent.right
+                    }
+
+                    textRole: "name"
+                    model: core.workspacesModel
+                }
+            }
+
+
+            footer: DialogButtonBox {
+                ToolButton {
+                    id: cancelButtonItem
+                    text: qsTr("Cancel")
+                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+
+                    onClicked: {
+                        //root.cancel()
+                    }
+                }
+                ToolButton {
+                    id: okButtonItem
+                    text: qsTr("Accept")
+                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+
+                    onClicked: {
+                        //root.ok()
+                    }
+                }
+            }
+
+            onClosed: {
+                newProjectDialog.destroy();
+                newProjectDialog = null;
+            }
+        }
+    }
+
+    property var renameProjectDialog: null
+    Component {
+        id: renameProjectDialogComponent
+        Dialog {
+            id: renameProjectDialogItem
+            visible: true
+
+            property string projectName: ""
+            property string projectId: ""
+
+            title: renameProjectDialogItem.projectName == "" ? qsTr("Rename project ")
+                                                             : projectName
+
+            width: 400
+            height: 200
+
+            x: (parent.width - width) * 0.5
+            y: (parent.height - height) * 0.5
+
+            Item {
+                anchors {
+                    fill: parent
+                    topMargin: renameProjectDialogItem.header.height
+                    bottomMargin: renameProjectDialogItem.footer.height
+                }
+
+                TextField {
+                    id: newNameTextField
+                    text: renameProjectDialogItem.projectName
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width * 0.7
+
+                    placeholderText: qsTr("New name...")
+                }
+            }
+
+            footer: DialogButtonBox {
+                ToolButton {
+                    id: cancelButtonItem
+                    text: qsTr("Cancel")
+                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+
+                    onClicked: {
+                        //root.cancel()
+                    }
+                }
+                ToolButton {
+                    id: okButtonItem
+                    text: qsTr("Accept")
+                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+
+                    onClicked: {
+                        //root.ok()
+                    }
+                }
+            }
+
+            onClosed: {
+                renameProjectDialog.destroy();
+                renameProjectDialog = null;
             }
         }
     }

@@ -16,7 +16,7 @@ Dialog {
     signal ok
 
     width: 400
-    height: 250
+    height: 200
 
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
