@@ -24,11 +24,14 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+public slots:
     int count() const;
     void clearModel();
-    WorkspacePtr getItem(const QString &id);
 
+    WorkspacePtr getItem(const QString &id);
     WorkspacePtr getItem(const int index);
+
+    QVariantMap getItemData(const QString &id);
 
     void addItem(const QString &id, const QString &name, const QString &ownerId);
     void removeItem(const QString &id);

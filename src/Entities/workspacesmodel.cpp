@@ -83,6 +83,22 @@ WorkspacePtr WorkspacesModel::getItem(const int index)
     return m_items.at(index);
 }
 
+QVariantMap WorkspacesModel::getItemData(const QString &id)
+{
+    auto item = getItem(id);
+    if(item)
+    {
+        QVariantMap itemData;
+        itemData.insert("id", item->id);
+        itemData.insert("name", item->name);
+        itemData.insert("owner", item->ownerId);
+
+        return itemData;
+    }
+
+    return QVariantMap();
+}
+
 void WorkspacesModel::addItem(const QString &id, const QString &name, const QString &ownerId)
 {
     auto newItem = std::make_shared<Workspace>();

@@ -7,7 +7,7 @@ Item {
     id: root
 
     property alias name: nameLabel.text
-    property string totalTime
+    property string totalTime: ""
 
     signal remove
 
@@ -48,7 +48,7 @@ Item {
         clip: true
         elide: Label.ElideRight
 
-        text: root.totalTime + " " + qsTr("h")
+        text: root.totalTime != "" ? + " " + qsTr("h") : ""
 
         width: parent.width * 0.2
     }
