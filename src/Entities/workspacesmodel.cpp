@@ -66,7 +66,7 @@ void WorkspacesModel::clearModel()
     emit countChanged(count());
 }
 
-WorkspacePtr WorkspacesModel::getItem(const QString &id)
+WorkspacePtr WorkspacesModel::getItem(const QString &id) const
 {
     for (auto item : m_items)
     {
@@ -76,16 +76,33 @@ WorkspacePtr WorkspacesModel::getItem(const QString &id)
     return nullptr;
 }
 
-WorkspacePtr WorkspacesModel::getItem(const int index)
+WorkspacePtr WorkspacesModel::getItem(const int index) const
 {
     if(index < 0 || index >= count())
             return nullptr;
     return m_items.at(index);
 }
 
-QVariantMap WorkspacesModel::getItemData(const QString &id)
+QVariantMap WorkspacesModel::getItemData(const QString &id) const
 {
     auto item = getItem(id);
+    if(item)
+    {
+        QVariantMap itemData;
+        itemData.insert("id", item->id);
+        itemData.insert("name", item->name);
+        itemData.insert("owner", item->ownerId);
+
+        return itemData;
+    }
+
+    return QVariantMap();
+}
+
+QVariantMap WorkspacesModel::get(int ind) const
+{
+    auto item = getItem(ind);
+
     if(item)
     {
         QVariantMap itemData;
@@ -110,6 +127,8 @@ void WorkspacesModel::addItem(const QString &id, const QString &name, const QStr
     beginInsertRows(QModelIndex(), count(), count());
     m_items.append(newItem);
     endInsertRows();
+
+    emit countChanged(count());
 }
 
 void WorkspacesModel::removeItem(const QString &id)

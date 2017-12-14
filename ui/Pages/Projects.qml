@@ -51,7 +51,6 @@ Item {
             height: 50 /** uiScale.yScale*/
 
             name: model.name
-            projectId: model.itemId
             //totalTime: model.totalTime
 
             onRemove: {
@@ -77,10 +76,14 @@ Item {
             }
 
             onNewProject: {
-                if (newProjectDialog)
-                    newProjectDialog.destroy();
+                if (createDialog)
+                    createDialog.destroy();
 
-                newProjectDialog = newProjectDialogComponent.createObject(root)
+                createDialog = createDialogComponent.createObject(root)
+            }
+
+            onSetDefault: {
+                core.setProjectAsDefault(model.itemId)
             }
         }
 
@@ -99,10 +102,10 @@ Item {
         font.pointSize: 16
         highlighted: true
         onClicked: {
-            if (newProjectDialog)
-                newProjectDialog.destroy();
+            if (createDialog)
+                createDialog.destroy();
 
-            newProjectDialog = newProjectDialogComponent.createObject(root)
+            createDialog = createDialogComponent.createObject(root)
         }
     }
 
@@ -128,6 +131,7 @@ Item {
 
             onAction: {
                 core.deleteProject(removeDialogItem.projectId)
+                //TODO: implement
                 removeDialogItem.close();
             }
 
@@ -143,11 +147,11 @@ Item {
     }
 
 
-    property var newProjectDialog: null
+    property var createDialog: null
     Component {
-        id: newProjectDialogComponent
+        id: createDialogComponent
         Dialog {
-            id: newProjectDialogItem
+            id: createDialogItem
             visible: true
 
             property string projectName: ""
@@ -164,15 +168,14 @@ Item {
             Item {
                 anchors {
                     fill: parent
-                    topMargin: newProjectDialogItem.header.height
-                    bottomMargin: newProjectDialogItem.footer.height
+                    topMargin: createDialogItem.header.height
+                    bottomMargin: createDialogItem.footer.height
                 }
 
                 TextField {
-                    id: newProjectTextField
+                    id: createTextField
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.5
-                    text: newProjectDialogItem.projectName
                     placeholderText: qsTr("Enter the name..")
                 }
 
@@ -180,7 +183,7 @@ Item {
                     id: workspacesComboBox
                     anchors {
                         verticalCenter: parent.verticalCenter
-                        left: newProjectTextField.right
+                        left: createTextField.right
                         right: parent.right
                     }
 
@@ -197,7 +200,7 @@ Item {
                     DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
                     onClicked: {
-                        //root.cancel()
+
                     }
                 }
                 ToolButton {
@@ -206,14 +209,14 @@ Item {
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
-                        //root.ok()
+                        core.createNewProject(createTextField.text, core.workspacesModel.get(workspacesComboBox.currentIndex).id)
                     }
                 }
             }
 
             onClosed: {
-                newProjectDialog.destroy();
-                newProjectDialog = null;
+                createDialog.destroy();
+                createDialog = null;
             }
         }
     }
@@ -228,8 +231,7 @@ Item {
             property string projectName: ""
             property string projectId: ""
 
-            title: renameProjectDialogItem.projectName == "" ? qsTr("Rename project ")
-                                                             : projectName
+            title: qsTr("Rename project %1").arg(projectName == "" ? "" : projectName)
 
             width: 400
             height: 200
@@ -246,7 +248,6 @@ Item {
 
                 TextField {
                     id: newNameTextField
-                    text: renameProjectDialogItem.projectName
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.7
 
@@ -270,7 +271,7 @@ Item {
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
-                        //root.ok()
+                        core.updateProject(newNameTextField.text, renameProjectDialogItem.projectId)
                     }
                 }
             }

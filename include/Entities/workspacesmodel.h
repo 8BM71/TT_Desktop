@@ -28,10 +28,11 @@ public slots:
     int count() const;
     void clearModel();
 
-    WorkspacePtr getItem(const QString &id);
-    WorkspacePtr getItem(const int index);
+    WorkspacePtr getItem(const QString &id) const;
+    WorkspacePtr getItem(const int index) const;
 
-    QVariantMap getItemData(const QString &id);
+    QVariantMap getItemData(const QString &id) const;
+    QVariantMap get(int ind) const;
 
     void addItem(const QString &id, const QString &name, const QString &ownerId);
     void removeItem(const QString &id);

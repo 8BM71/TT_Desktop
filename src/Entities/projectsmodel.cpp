@@ -97,6 +97,8 @@ void ProjectsModel::addItem(const QString &id, const QString &name, const QStrin
     beginInsertRows(QModelIndex(), count(), count());
     m_items.append(newItem);
     endInsertRows();
+
+    emit countChanged(count());
 }
 
 void ProjectsModel::removeItem(const QString &id)

@@ -90,9 +90,14 @@ void LogicCore::setProjectForTask()
     //TODO: implement
 }
 
-void LogicCore::createNewProject()
+void LogicCore::createNewProject(const QString &name, const QString &workspaceId)
 {
-    //TODO: implement
+    m_webService.createProject(name, workspaceId, [this, name, workspaceId](bool success, QString info){
+        if(success)
+        {
+            m_projectModel->addItem(info, name, workspaceId);
+        }
+    });
 }
 
 void LogicCore::moveProjectToWorkspace()
@@ -115,9 +120,14 @@ void LogicCore::setProjectAsDefault()
     //TODO: implement
 }
 
-void LogicCore::createNewWorkspace()
+void LogicCore::createNewWorkspace(const QString &name)
 {
-    //TODO: implement
+    m_webService.createWorkspace(name, m_currentUser.id, [this, name](bool success, QString info){
+        if(success)
+        {
+            m_workspacesModel->addItem(info, name, m_currentUser.id);
+        }
+    });
 }
 
 void LogicCore::updateWorkspace()

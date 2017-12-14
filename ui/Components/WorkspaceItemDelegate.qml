@@ -10,6 +10,9 @@ Item {
     property string totalProjects
 
     signal remove
+    signal newWorkspace
+    signal rename
+    signal setDefault
 
     Pane {
         anchors.fill: parent
@@ -53,6 +56,24 @@ Item {
         width: parent.width * 0.2
     }
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: {
+
+            if (contextMenu)
+                contextMenu.destroy();
+
+            contextMenu = contextMenuComponent.createObject(root,
+                                                            {
+                                                                "x": mouseX,
+                                                                "y": mouseY,
+                                                                "workspaceName": model.name,
+                                                                "workspaceId": model.itemId
+                                                            })
+        }
+    }
+
     RoundButton {
         id: removeButton
         anchors {
@@ -84,6 +105,50 @@ Item {
 
         onClicked: {
             root.remove()
+        }
+    }
+
+    property var contextMenu: null
+    Component {
+        id: contextMenuComponent
+        Menu {
+            id: contextMenuItem
+
+            property string workspaceName: ""
+            property string workspaceId: ""
+
+            MenuItem {
+                text: qsTr("New")
+                onTriggered: {
+                    root.newWorkspace()
+                }
+            }
+            MenuItem {
+                text: qsTr("Rename")
+                onTriggered: {
+                    root.rename()
+                }
+            }
+            MenuItem {
+                text: qsTr("Remove")
+                onTriggered: {
+                    root.remove()
+                }
+            }
+            MenuItem {
+                text: qsTr("Set default")
+                onTriggered: {
+                    root.setDefault()
+                }
+            }
+            Component.onCompleted: {
+                open()
+            }
+
+            onClosed: {
+                contextMenu.destroy()
+                contextMenu = null
+            }
         }
     }
 }

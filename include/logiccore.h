@@ -61,7 +61,7 @@ public slots:
 
 
     // Project methods
-    void createNewProject();
+    void createNewProject(const QString &name, const QString &workspaceId);
 
     void moveProjectToWorkspace();
 
@@ -74,7 +74,7 @@ public slots:
 
 
     // Workspace methods
-    void createNewWorkspace();
+    void createNewWorkspace(const QString &name);
 
     void updateWorkspace();
 

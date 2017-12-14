@@ -27,10 +27,217 @@ Item {
             //totalProjects: model.totalProjects
 
             onRemove: {
-                //remove(model.id)
+                if (removeDialog)
+                    removeDialog.destroy();
+
+                removeDialog = removeDialogComponent.createObject(root,
+                                                                  {
+                                                                      "workspaceName": model.name,
+                                                                      "workspaceId": model.itemId
+                                                                  })
+            }
+
+            onRename: {
+                if (renameDialog)
+                    renameDialog.destroy();
+
+                renameDialog = renameDialogComponent.createObject(root,
+                                                                  {
+                                                                      "workspaceName": model.name,
+                                                                      "workspaceId": model.itemId
+                                                                  })
+            }
+
+            onNewWorkspace: {
+                if (createDialog)
+                    createDialog.destroy();
+
+                createDialog = createDialogComponent.createObject(root)
+            }
+
+            onSetDefault: {
+                core.setWorkspaceAsDefault(model.itemId)
             }
         }
 
         ScrollIndicator.vertical: ScrollIndicator { }
+    }
+
+    RoundButton {
+        text: qsTr("+")
+        width: 70
+        height: width
+        anchors {
+            right: parent.right
+            bottom: parent.bottom
+            margins: 25
+        }
+        font.pointSize: 16
+        highlighted: true
+        onClicked: {
+            if (createDialog)
+                createDialog.destroy();
+
+            createDialog = createDialogComponent.createObject(root)
+        }
+    }
+
+    property var removeDialog: null
+    Component {
+        id: removeDialogComponent
+        MessageDialog {
+            id: removeDialogItem
+
+            property string workspaceName: ""
+            property string workspaceId: ""
+
+            title: removeDialogItem.workspaceName == "" ? qsTr("Remove workspace ")
+                                                        : workspaceName
+            text: qsTr("Do you want to remove only workspaceName or all projects in this workspaceName too?")
+
+            okButton.text: qsTr("Remove workspaceName")
+            actionButton.text: qsTr("Remove all")
+
+            onOk: {
+                core.deleteWorkspace(removeDialogItem.workspaceId)
+            }
+
+            onAction: {
+                core.deleteWorkspace(removeDialogItem.workspaceId)
+                //TODO: implement
+                removeDialogItem.close();
+            }
+
+            onCancel: {
+
+            }
+
+            onClosed: {
+                removeDialog.destroy();
+                removeDialog = null;
+            }
+        }
+    }
+
+    property var renameDialog: null
+    Component {
+        id: renameDialogComponent
+        Dialog {
+            id: renameDialogItem
+            visible: true
+
+            property string workspaceName: ""
+            property string workspaceId: ""
+
+            title: qsTr("Rename workspace %1").arg(workspaceName == "" ? "" : workspaceName)
+
+            width: 400
+            height: 200
+
+            x: (parent.width - width) * 0.5
+            y: (parent.height - height) * 0.5
+
+            Item {
+                anchors {
+                    fill: parent
+                    topMargin: renameDialogItem.header.height
+                    bottomMargin: renameDialogItem.footer.height
+                }
+
+                TextField {
+                    id: newNameTextField
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width * 0.7
+
+                    placeholderText: qsTr("New name...")
+                }
+            }
+
+            footer: DialogButtonBox {
+                ToolButton {
+                    id: cancelButtonItem
+                    text: qsTr("Cancel")
+                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+
+                    onClicked: {
+
+                    }
+                }
+                ToolButton {
+                    id: okButtonItem
+                    text: qsTr("Accept")
+                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+
+                    onClicked: {
+                        core.updateWorkspace(newNameTextField.text, renameDialogItem.workspaceId)
+                    }
+                }
+            }
+
+            onClosed: {
+                renameDialog.destroy();
+                renameDialog = null;
+            }
+        }
+    }
+
+
+    property var createDialog: null
+    Component {
+        id: createDialogComponent
+        Dialog {
+            id: createDialogItem
+            visible: true
+
+            title: qsTr("Create workspace ")
+
+            width: 400
+            height: 200
+
+            x: (parent.width - width) * 0.5
+            y: (parent.height - height) * 0.5
+
+            Item {
+                anchors {
+                    fill: parent
+                    topMargin: createDialogItem.header.height
+                    bottomMargin: createDialogItem.footer.height
+                }
+
+                TextField {
+                    id: newNameTextField
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width * 0.7
+
+                    placeholderText: qsTr("Enter the name...")
+                }
+            }
+
+            footer: DialogButtonBox {
+                ToolButton {
+                    id: cancelButtonItem
+                    text: qsTr("Cancel")
+                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+
+                    onClicked: {
+
+                    }
+                }
+                ToolButton {
+                    id: okButtonItem
+                    text: qsTr("Accept")
+                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+
+                    onClicked: {
+                        core.createNewWorkspace(newNameTextField.text)
+                    }
+                }
+            }
+
+            onClosed: {
+                createDialog.destroy();
+                createDialog = null;
+            }
+        }
     }
 }

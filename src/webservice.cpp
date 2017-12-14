@@ -297,8 +297,8 @@ void WebService::createWorkspace(const QString &name, const QString &ownerId, Su
                     if (!resultObject.isEmpty())
                     {
                         QString id = resultObject.value("id").toString("");
-                        QString name = resultObject.value("name").toString("");
-                        successCallback(true, QString("Workspace '%1' created with id %2").arg(name).arg(id));
+                        //QString name = resultObject.value("name").toString("");
+                        successCallback(true, id/*QString("Workspace '%1' created with id %2").arg(name).arg(id)*/);
                     }
                 }
                 else
@@ -336,8 +336,8 @@ void WebService::createProject(const QString &name, const QString &workspaceId, 
                     if (!resultObject.isEmpty())
                     {
                         QString id = resultObject.value("id").toString("");
-                        QString name = resultObject.value("name").toString("");
-                        successCallback(true, QString("Project '%1' created with id %2").arg(name).arg(id));
+                        //QString name = resultObject.value("name").toString("");
+                        successCallback(true, id/*QString("Project '%1' created with id %2").arg(name).arg(id)*/);
                     }
                 }
                 else
