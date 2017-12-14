@@ -38,17 +38,11 @@ public:
 
     void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
-//    void getWorkspaceById();
-
     void getAllProjects(const QString &ownerId, ProjectsModelPtr projectModel, SuccessCallback successCallback);
-
-//    void getProjectById();
 
     void getAllTasks(const QString &ownerId, TasksModelPtr taskModel, SuccessCallback successCallback);
 
-//    void getTaskById();
-
-//    void getTimeEntries();
+    void getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr timeModel, SuccessCallback successCallback);
 
     void createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback);
 

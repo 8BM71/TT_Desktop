@@ -90,6 +90,8 @@ private:
 
     void updateTasksModel();
 
+    void updateTimeEntriesModel();
+
 private:
     WebService m_webService;
     Entities::User m_currentUser;

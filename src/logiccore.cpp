@@ -16,6 +16,7 @@ LogicCore::LogicCore(QObject *parent) : QObject(parent)
     updateWorkspacesModel();
     updateProjectsModel();
     updateTasksModel();
+    updateTimeEntriesModel();
 }
 
 LogicCore::~LogicCore()
@@ -152,5 +153,12 @@ void LogicCore::updateTasksModel()
 {
     m_webService.getAllTasks(m_currentUser.id, m_tasksModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update tasks success: %0, info: %1").arg(succes).arg(info);
+    });
+}
+
+void LogicCore::updateTimeEntriesModel()
+{
+    m_webService.getAllTimeEntries(m_currentUser.id, m_timeEntriesModel, [](bool succes, QString info){
+        qCDebug(logicCore) << QString("Update time entries success: %0, info: %1").arg(succes).arg(info);
     });
 }

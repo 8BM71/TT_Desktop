@@ -191,6 +191,86 @@ void WebService::getAllTasks(const QString &ownerId, TasksModelPtr taskModel, Su
     });
 }
 
+void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr timeModel, SuccessCallback successCallback)
+{
+    QString query = QString("{"
+                            "workspaces(ownerId: \"%1\") {"
+                                "tasks {"
+                                    "id timeEntry {"
+                                        "id duration endDate startDate}"
+                                    "}"
+                                "}"
+                            "}").arg(ownerId);
+
+    postRequest(query, [this, timeModel, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonArray workspaceArray = dataObject.value("workspaces").toArray(QJsonArray());
+                    timeModel->clearModel();
+                    for (auto workspaceValue : workspaceArray)
+                    {
+                        if (workspaceValue.isObject())
+                        {
+                            QJsonObject workspace = workspaceValue.toObject();
+
+                            QJsonArray taskArray = workspace.value("tasks").toArray(QJsonArray());
+                            for (auto taskValue : taskArray)
+                            {
+                                if (taskValue.isObject())
+                                {
+                                    QJsonObject task = taskValue.toObject();
+                                    QString taskId = task.value("id").toString("");
+
+                                    QJsonObject timeEntry = task.value("timeEntry").toObject(QJsonObject());
+
+                                    QString timeEntryId = timeEntry.value("id").toString("");
+                                    qint64 duration = timeEntry.value("duration").toVariant().toLongLong();
+
+                                    QDateTime startDateTime;
+                                    startDateTime.setMSecsSinceEpoch(timeEntry["startDate"].toString("").toLongLong());
+
+                                    QDateTime endDateTime;
+                                    endDateTime.setMSecsSinceEpoch(timeEntry["endDate"].toString("").toLongLong());
+
+                                    auto timeEntryItem = std::make_shared<TimeEntry>();
+
+                                    timeEntryItem->id = timeEntryId;
+                                    timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
+                                    timeEntryItem->startTime = startDateTime.time().toString("hh.mm.ss");
+                                    timeEntryItem->duration = QString::number(duration);
+                                    timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
+                                    timeEntryItem->endTime = endDateTime.time().toString("hh.mm.ss");
+                                    timeEntryItem->taskId = taskId;
+
+                                    timeModel->addItem(timeEntryItem);
+
+                                }
+                            }
+                        }
+                    }
+                    successCallback(true, "Time entry model updated");
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
+
 void WebService::createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"

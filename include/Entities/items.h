@@ -10,7 +10,9 @@ struct TimeEntry {
     QString id;
     QString duration;
     QString startDate;
+    QString startTime;
     QString endDate;
+    QString endTime;
     QString taskId;
 };
 
