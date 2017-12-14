@@ -127,7 +127,7 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Entities::T
                             "workspaces(ownerId: \"%1\") {"
                                 "id projects {"
                                     "id tasks {"
-                                        "id}"
+                                        "id name}"
                                     "}"
                                 "}"
                             "}").arg(ownerId);
@@ -170,7 +170,8 @@ void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Entities::T
                                         {
                                             QJsonObject task = taskValue.toObject();
                                             QString taskId = task.value("id").toString("");
-                                            taskModel->addItem(taskId, projectId, "");
+                                            QString taskName = task.value("name").toString("");
+                                            taskModel->addItem(taskId, projectId, taskName);
                                         }
                                     }
 
