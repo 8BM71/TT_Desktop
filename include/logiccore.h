@@ -18,6 +18,8 @@ class LogicCore : public QObject
     Q_PROPERTY(ProjectsModel* projectsModel READ projectsModel NOTIFY projectsModelChanged)
     Q_PROPERTY(TasksModel* tasksModel READ tasksModel NOTIFY tasksModelChanged)
     Q_PROPERTY(TimeEntriesModel* timeEntriesModel READ timeEntriesModel NOTIFY timeEntriesModelChanged)
+    Q_PROPERTY(QString timerDuration READ timerDuration NOTIFY timerDurationChanged)
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
 
 public:
     explicit LogicCore(QObject *parent = nullptr);
@@ -31,6 +33,10 @@ public:
 
     TimeEntriesModel* timeEntriesModel() const;
 
+    QString timerDuration() const;
+
+    bool running() const;
+
 signals:
     void workspacesModelChanged();
 
@@ -39,6 +45,10 @@ signals:
     void tasksModelChanged();
 
     void timeEntriesModelChanged();
+
+    void timerDurationChanged(QString timerDuration);
+
+    void runningChanged(bool running);
 
 public slots:
     // Task, time entry methods
@@ -83,6 +93,10 @@ public slots:
     void setWorkspaceAsDefault();
     // !Workspace methods
 
+    // QObject interface
+protected:
+    void timerEvent(QTimerEvent *event);
+
 private:
     void updateWorkspacesModel();
 
@@ -99,6 +113,10 @@ private:
     std::shared_ptr<ProjectsModel> m_projectModel;
     std::shared_ptr<TasksModel> m_tasksModel;
     std::shared_ptr<TimeEntriesModel> m_timeEntriesModel;
+    QString m_timerDuration;
+    bool m_running;
+    int m_timerId;
+    TimeEntryPtr m_currentTimeEntry;
 };
 
 #endif // LOGICCORE_H

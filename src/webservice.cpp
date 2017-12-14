@@ -380,9 +380,11 @@ void WebService::createTask(const QString &name, const QString &projectId, Tasks
 
                         QJsonObject timeEntry = resultObject.value("timeEntry").toObject(QJsonObject());
 
+                        QString timeId = "";
+
                         if (!timeEntry.isEmpty())
                         {
-                            QString timeId = timeEntry.value("id").toString("");
+                            timeId = timeEntry.value("id").toString("");
                             QString startDate = timeEntry.value("startDate").toString();
 
                             QDateTime dateTime;
@@ -393,13 +395,21 @@ void WebService::createTask(const QString &name, const QString &projectId, Tasks
 
                             QString timeAsString = dateTime.time().toString("hh.mm.ss");
 
+                            auto timeEntryItem = std::make_shared<TimeEntry>();
+                            timeEntryItem->id = timeId;
+                            timeEntryItem->taskId = taskId;
+                            timeEntryItem->startTime = timeAsString;
+                            timeEntryItem->startDate = dateAsString;
+                            timeEntryItem->startMSecsSinceEpoch = startDate.toLongLong();
+                            timeModel->addItem(timeEntryItem);
+
+
                             qCDebug(webService) << startDate << dateAsString << timeAsString;
 
-                            timeModel->addItem(timeId, taskId, dateAsString);
+//                            timeModel->addItem(timeId, taskId, dateAsString, timeAsString);
                         }
-
                         taskModel->addItem(taskId, projectId, taskName);
-                        successCallback(true, QString("Task %0 created with id %1").arg(taskName).arg(taskId));
+                        successCallback(true, timeId); //NOTE: may be return timentry and task
                     }
                 }
                 else

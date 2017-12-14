@@ -2,10 +2,16 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QMetaType>
+#include <QTimerEvent>
+#include <QDateTime>
 
 Q_LOGGING_CATEGORY(logicCore, "LogicCore")
 
-LogicCore::LogicCore(QObject *parent) : QObject(parent)
+LogicCore::LogicCore(QObject *parent)
+    : QObject(parent)
+    , m_timerDuration("00.00.00")
+    , m_running(false)
+    , m_timerId(-1)
 {
     m_currentUser.id = "42cfb602-f544-4b1b-b01d-63cd6a0b644f";
     m_workspacesModel = std::make_shared<WorkspacesModel>();
@@ -44,14 +50,36 @@ TimeEntriesModel *LogicCore::timeEntriesModel() const
     return m_timeEntriesModel.get();
 }
 
+QString LogicCore::timerDuration() const
+{
+    return m_timerDuration;
+}
+
+bool LogicCore::running() const
+{
+    return m_running;
+}
+
 void LogicCore::startNewTask(const QString &taskName, int projectIndex)
 {
     auto project = m_projectModel->getItem(projectIndex);
     if (project == nullptr)
         return;
     QString projectId = project->id;
-    m_webService.createTask(taskName, projectId, m_tasksModel, m_timeEntriesModel, [](bool success, QString info){
-        qCDebug(logicCore) << QString("Create task success: %0, info: %1").arg(success).arg(info);
+    m_webService.createTask(taskName, projectId, m_tasksModel, m_timeEntriesModel, [this](bool success, QString timeId){
+        qCDebug(logicCore) << QString("Create task success: %0").arg(success);
+        if (success)
+        {
+            if (m_timerId != -1)
+            {
+                killTimer(m_timerId);
+                m_timerId = -1;
+            }
+            m_currentTimeEntry = m_timeEntriesModel->getItem(timeId);
+
+            m_timerId = startTimer(1000);
+        }
+
     });
 }
 
@@ -171,4 +199,19 @@ void LogicCore::updateTimeEntriesModel()
     m_webService.getAllTimeEntries(m_currentUser.id, m_timeEntriesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update time entries success: %0, info: %1").arg(succes).arg(info);
     });
+}
+
+
+void LogicCore::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() == m_timerId)
+    {
+        qint64 duration = QDateTime::currentMSecsSinceEpoch() - m_currentTimeEntry->startMSecsSinceEpoch;
+
+        QTime time(0, 0);
+        time = time.addMSecs(static_cast<int>(duration));
+        m_timerDuration = time.toString("hh.mm.ss");
+
+        emit this->timerDurationChanged(m_timerDuration);
+    }
 }

@@ -85,6 +85,24 @@ ProjectPtr ProjectsModel::getItem(const int index)
     return m_items.at(index);
 }
 
+QVariantMap ProjectsModel::getItemData(const QString &id)
+{
+    auto item = getItem(id);
+    if (item)
+    {
+        QVariantMap itemData;
+
+        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
+        itemData.insert(roleNames().value(Roles::NameRole), item->name);
+        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
+        itemData.insert(roleNames().value(Roles::WorkspaceRole), item->workspaceId);
+
+        return itemData;
+
+    }
+    return QVariantMap();
+}
+
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
 {
     auto newItem = std::make_shared<Project>();

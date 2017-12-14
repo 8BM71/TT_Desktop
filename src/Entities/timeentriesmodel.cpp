@@ -87,14 +87,14 @@ TimeEntryPtr TimeEntriesModel::getItem(const QString &id)
     return nullptr;
 }
 
-void TimeEntriesModel::addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &endDate, const QString &duration)
+void TimeEntriesModel::addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &startTime, const QString &duration)
 {
     auto newItem = std::make_shared<TimeEntry>();
     newItem->id = id == "" ? QUuid::createUuid().toString()
                            : id;
     newItem->taskId = taskId;
     newItem->startDate = startDate;
-    newItem->endDate = endDate;
+    newItem->startTime = startTime;
     newItem->duration = duration;
 
     addItem(newItem);

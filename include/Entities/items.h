@@ -9,6 +9,7 @@ namespace Entities {
 struct TimeEntry {
     QString id;
     QString duration;
+    qint64 startMSecsSinceEpoch;
     QString startDate;
     QString startTime;
     QString endDate;

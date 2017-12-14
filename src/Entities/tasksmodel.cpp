@@ -78,6 +78,22 @@ TaskPtr TasksModel::getItem(const QString &id)
     return nullptr;
 }
 
+QVariantMap TasksModel::getItemData(const QString &id)
+{
+    auto item = getItem(id);
+    if (item)
+    {
+        QVariantMap itemData;
+        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
+        itemData.insert(roleNames().value(Roles::NameRole), item->name);
+        itemData.insert(roleNames().value(Roles::ProjectRole), item->projectId);
+        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
+
+        return itemData;
+    }
+    return QVariantMap();
+}
+
 void TasksModel::addItem(const QString &id, const QString &projectId, const QString &name, const QString &description)
 {
     auto newItem = std::make_shared<Task>();

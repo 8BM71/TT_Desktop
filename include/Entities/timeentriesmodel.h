@@ -33,7 +33,7 @@ public:
     void clearModel();
     TimeEntryPtr getItem(const QString &id);
 
-    void addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &endDate = "", const QString &duration = "");
+    void addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &startTime = "", const QString &duration = "");
 
     void addItem(TimeEntryPtr item);
     void removeItem(const QString &id);
