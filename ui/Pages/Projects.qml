@@ -45,16 +45,16 @@ Item {
         }
 
         delegate: ProjectItemDelegate {
+            id: projectDelegateItem
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 20
             height: 50 /** uiScale.yScale*/
 
             name: model.name
+            projectId: model.itemId
             //totalTime: model.totalTime
 
             onRemove: {
-                //remove(model.id)
-                console.debug("onRemove")
                 if (removeDialog)
                     removeDialog.destroy();
 
@@ -64,6 +64,23 @@ Item {
                                                                       "projectId": model.itemId
                                                                   })
             }
+
+//            onPopupMenu: {
+//                if (contextMenu)
+//                    contextMenu.destroy();
+
+
+//                var point = projectDelegateItem.mapToItem(null, mX, mY);
+//                console.debug(mX, mY, point.x, point.y)
+
+//                contextMenu = contextMenuComponent.createObject(root,
+//                                                                {
+//                                                                    "x": point.x,
+//                                                                    "y": point.y,
+//                                                                    "projectName": model.name,
+//                                                                    "projectId": model.itemId
+//                                                                })
+//            }
         }
 
         ScrollIndicator.vertical: ScrollIndicator { }
@@ -112,6 +129,11 @@ Item {
 
             onCancel: {
 
+            }
+
+            onClosed: {
+                removeDialog.destroy();
+                removeDialog = null;
             }
         }
     }

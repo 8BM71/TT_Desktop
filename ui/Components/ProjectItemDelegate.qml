@@ -6,10 +6,14 @@ import QtGraphicalEffects 1.0
 Item {
     id: root
 
+    property string projectId
     property alias name: nameLabel.text
     property string totalTime: ""
 
     signal remove
+    signal newProject
+    signal rename
+    signal popupMenu(var mX, var mY)
 
     Pane {
         anchors.fill: parent
@@ -53,6 +57,25 @@ Item {
         width: parent.width * 0.2
     }
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: {
+            //root.popupMenu(mouseX,mouseY)
+
+            if (contextMenu)
+                contextMenu.destroy();
+
+            contextMenu = contextMenuComponent.createObject(root,
+                                                            {
+                                                                "x": mouseX,
+                                                                "y": mouseY,
+                                                                "projectName": model.name,
+                                                                "projectId": model.itemId
+                                                            })
+        }
+    }
+
     RoundButton {
         id: removeButton
         anchors {
@@ -84,6 +107,44 @@ Item {
 
         onClicked: {
             root.remove()
+        }
+    }
+
+    property var contextMenu: null
+    Component {
+        id: contextMenuComponent
+        Menu {
+            id: contextMenuItem
+
+            property string projectName: ""
+            property string projectId: ""
+
+            MenuItem {
+                text: qsTr("New")
+                onTriggered: {
+                    root.newProject()
+                }
+            }
+            MenuItem {
+                text: qsTr("Rename")
+                onTriggered: {
+                    root.rename()
+                }
+            }
+            MenuItem {
+                text: qsTr("Remove")
+                onTriggered: {
+                    root.remove()
+                }
+            }
+            Component.onCompleted: {
+                open()
+            }
+
+            onClosed: {
+                contextMenu.destroy()
+                contextMenu = null
+            }
         }
     }
 }
