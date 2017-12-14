@@ -56,7 +56,7 @@ Item {
 //                anchors.centerIn: parent
 //                text: parent.objectName
 //            }
-            model: core.tasksModel
+            model: core.timeEntriesModel//core.tasksModel
         }
     }
 

@@ -11,6 +11,7 @@
 #include "workspacesmodel.h"
 #include "projectsmodel.h"
 #include "tasksmodel.h"
+#include "timeentriesmodel.h"
 
 struct Response
 {
@@ -26,6 +27,8 @@ typedef std::shared_ptr<Response> ResponsePtr;
 typedef std::function<void (ResponsePtr)> PerformCallback;
 typedef std::function<void (bool, QString)> SuccessCallback;
 
+using namespace Entities;
+
 class WebService : public QObject
 {
     Q_OBJECT
@@ -33,15 +36,15 @@ public:
     explicit WebService(QObject *parent = nullptr);
     ~WebService();
 
-    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Entities::WorkspacesModel> workspaceModel, SuccessCallback successCallback);
+    void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
 //    void getWorkspaceById();
 
-    void getAllProjects(const QString &ownerId, std::shared_ptr<Entities::ProjectsModel> projectModel, SuccessCallback successCallback);
+    void getAllProjects(const QString &ownerId, ProjectsModelPtr projectModel, SuccessCallback successCallback);
 
 //    void getProjectById();
 
-    void getAllTasks(const QString &ownerId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback);
+    void getAllTasks(const QString &ownerId, TasksModelPtr taskModel, SuccessCallback successCallback);
 
 //    void getTaskById();
 
@@ -51,7 +54,7 @@ public:
 
     void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
 
-    void createTask(const QString &name, const QString &projectId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback);
+    void createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback);
 
 //    void createTimeEntry();
 

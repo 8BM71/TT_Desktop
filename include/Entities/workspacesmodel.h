@@ -44,6 +44,8 @@ private:
     QList<WorkspacePtr> m_items;
 };
 
+typedef std::shared_ptr<WorkspacesModel> WorkspacesModelPtr;
+
 }
 
 #endif // WORKSPACESMODEL_H

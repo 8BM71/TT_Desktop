@@ -42,6 +42,8 @@ private:
     QList<TimeEntryPtr> m_items;
 };
 
+typedef std::shared_ptr<TimeEntriesModel> TimeEntriesModelPtr;
+
 }
 
 #endif // TIMEENTRIESMODEL_H

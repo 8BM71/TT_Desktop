@@ -7,6 +7,10 @@ Item {
     id: root
     objectName: "TimeLinePage"
 
+    property var taskModel
+
+    property var timeEntryModel
+
     property alias model: timeLineView.model
 
     ListView {
@@ -23,7 +27,7 @@ Item {
             width: parent.width - 20
             height: 50 /** uiScale.yScale*/
 
-            name: model.name
+            name: model.startDate//model.name
         }
 
 

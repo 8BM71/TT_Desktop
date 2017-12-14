@@ -1,6 +1,7 @@
 #include "webservice.h"
 #include <QTimer>
 #include <QDebug>
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -12,14 +13,14 @@ WebService::WebService(QObject *parent)
     : QObject(parent)
     , m_waitTime(30 * 1000)
 {
-    m_host = "http://85.143.77.75:8080";
+    m_host = "http://54.69.134.117:8008";
 }
 
 WebService::~WebService()
 {
 }
 
-void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Entities::WorkspacesModel> workspaceModel, SuccessCallback successCallback)
+void WebService::getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -64,7 +65,7 @@ void WebService::getAllWorkspaces(const QString &ownerId, std::shared_ptr<Entiti
     });
 }
 
-void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Entities::ProjectsModel> projectModel, SuccessCallback successCallback)
+void WebService::getAllProjects(const QString &ownerId, ProjectsModelPtr projectModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -121,7 +122,7 @@ void WebService::getAllProjects(const QString &ownerId, std::shared_ptr<Entities
     });
 }
 
-void WebService::getAllTasks(const QString &ownerId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback)
+void WebService::getAllTasks(const QString &ownerId, TasksModelPtr taskModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
                             "workspaces(ownerId: \"%1\") {"
@@ -269,14 +270,14 @@ void WebService::createProject(const QString &name, const QString &workspaceId, 
     });
 }
 
-void WebService::createTask(const QString &name, const QString &projectId, std::shared_ptr<Entities::TasksModel> taskModel, SuccessCallback successCallback)
+void WebService::createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createTask(projId: \"%1\", name: \"%2\") {"
-                                "id name}"
+                                "id name timeEntry {id startDate}}"
                             "}").arg(projectId).arg(name);
 
-    postRequest(query, [this, successCallback, taskModel, projectId](ResponsePtr resp) {
+    postRequest(query, [this, successCallback, taskModel, projectId, timeModel](ResponsePtr resp) {
         if (resp->isError)
         {
             successCallback(false, resp->errorString);
@@ -294,10 +295,31 @@ void WebService::createTask(const QString &name, const QString &projectId, std::
                     QJsonObject resultObject = dataObject.value("createTask").toObject(QJsonObject());
                     if (!resultObject.isEmpty())
                     {
-                        QString id = resultObject.value("id").toString("");
+                        QString taskId = resultObject.value("id").toString("");
                         QString taskName = resultObject.value("name").toString("");
-                        taskModel->addItem(id, projectId, taskName);
-                        successCallback(true, QString("Task %0 created with id %1").arg(taskName).arg(id));
+
+                        QJsonObject timeEntry = resultObject.value("timeEntry").toObject(QJsonObject());
+
+                        if (!timeEntry.isEmpty())
+                        {
+                            QString timeId = timeEntry.value("id").toString("");
+                            QString startDate = timeEntry.value("startDate").toString();
+
+                            QDateTime dateTime;
+
+                            dateTime.setMSecsSinceEpoch(startDate.toLongLong());
+
+                            QString dateAsString = dateTime.date().toString("dd.MM.yy");
+
+                            QString timeAsString = dateTime.time().toString("hh.mm.ss");
+
+                            qCDebug(webService) << startDate << dateAsString << timeAsString;
+
+                            timeModel->addItem(timeId, taskId, dateAsString);
+                        }
+
+                        taskModel->addItem(taskId, projectId, taskName);
+                        successCallback(true, QString("Task %0 created with id %1").arg(taskName).arg(taskId));
                     }
                 }
                 else

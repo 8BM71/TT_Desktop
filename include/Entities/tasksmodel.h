@@ -41,6 +41,8 @@ private:
 
 };
 
+typedef std::shared_ptr<TasksModel> TasksModelPtr;
+
 }
 
 #endif // TASKSMODEL_H

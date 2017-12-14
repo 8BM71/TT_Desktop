@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QCoreApplication::setApplicationName("TimeTracker");
-    QCoreApplication::setOrganizationName("TPU");
+    QCoreApplication::setOrganizationName("TTTPU");
     QCoreApplication::setOrganizationDomain("tttpu.tk");
 
     QGuiApplication app(argc, argv);

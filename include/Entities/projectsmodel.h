@@ -42,5 +42,7 @@ private:
     QList<ProjectPtr> m_items;
 };
 
+typedef std::shared_ptr<ProjectsModel> ProjectsModelPtr;
+
 }
 #endif // PROJECTSMODEL_H

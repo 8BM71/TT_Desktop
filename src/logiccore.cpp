@@ -49,7 +49,7 @@ void LogicCore::startNewTask(const QString &taskName, int projectIndex)
     if (project == nullptr)
         return;
     QString projectId = project->id;
-    m_webService.createTask(taskName, projectId, m_tasksModel, [](bool success, QString info){
+    m_webService.createTask(taskName, projectId, m_tasksModel, m_timeEntriesModel, [](bool success, QString info){
         qCDebug(logicCore) << QString("Create task success: %0, info: %1").arg(success).arg(info);
     });
 }
