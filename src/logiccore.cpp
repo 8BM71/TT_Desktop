@@ -9,7 +9,7 @@ Q_LOGGING_CATEGORY(logicCore, "LogicCore")
 
 LogicCore::LogicCore(QObject *parent)
     : QObject(parent)
-    , m_timerDuration("00.00.00")
+    , m_timerDuration("00:00:00")
     , m_running(false)
     , m_timerId(-1)
 {
@@ -220,7 +220,7 @@ void LogicCore::timerEvent(QTimerEvent *event)
 
         QTime time(0, 0);
         time = time.addMSecs(static_cast<int>(duration));
-        m_timerDuration = time.toString("hh.mm.ss");
+        m_timerDuration = time.toString("hh:mm: ss");
 
         emit this->timerDurationChanged(m_timerDuration);
     }

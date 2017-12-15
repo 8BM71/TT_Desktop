@@ -11,6 +11,7 @@ Item {
     property alias duration: durationLabel.text
     property var startTime
     property var endTime
+    property var contextMenu: null
 
     Pane {
         anchors.fill: parent
@@ -154,13 +155,36 @@ Item {
 
         onClicked: {
             mouse.accepted = mouse.button == Qt.RightButton
-            //TODO: open context menu
+            if (root.contextMenu)
+                root.contextMenu.destroy();
+            root.contextMenu = contextMenuComponent.createObject(root, {"x" : mouseX, "y" : mouseY})
         }
         onPressed: {
             mouse.accepted = mouse.button == Qt.RightButton
         }
         onReleased: {
             mouse.accepted = mouse.button == Qt.RightButton
+        }
+    }
+
+    Component {
+        id: contextMenuComponent
+        Menu {
+            id: contextMenuItem
+
+            MenuItem {
+                text: qsTr("Edit")
+            }
+            MenuItem {
+                text: qsTr("Remove")
+            }
+            Component.onCompleted: {
+                open()
+            }
+            onClosed: {
+                root.contextMenu.destroy()
+                root.contextMenu = null
+            }
         }
     }
 
