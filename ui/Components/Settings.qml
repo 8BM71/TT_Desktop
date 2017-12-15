@@ -14,8 +14,8 @@ Item {
     Settings {
         id: userInterface
         property int theme: Material.Dark
-        property int accent: Material.DeepOrange
-        property int primary: Material.Red
+        property int accent: Material.Teal
+        property int primary: Material.Grey
         property int foreground: Material.Indigo
         property int background: Material.Grey
     }

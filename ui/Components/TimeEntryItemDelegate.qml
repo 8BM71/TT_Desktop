@@ -23,36 +23,89 @@ Item {
             left: parent.left
             verticalCenter: parent.verticalCenter
             leftMargin: 10
-            right: projectNameLabel.left
+            right: timeEntriesShowButton.left
             rightMargin: 10
         }
+        text: "Taskkk"
 
+    }
+
+    Button {
+        id: timeEntriesShowButton
+        anchors {
+            right: projectNameLabel.left
+            verticalCenter: parent.verticalCenter
+            rightMargin: 10
+        }
+        visible: mouseArea.hovered
+        width: 40
+        height: 40
+        text: "5"
+        Material.elevation: 0
+        Material.background: Material.color(Material.Grey, Material.Shade100)
     }
 
     Label {
         id: projectNameLabel
 
         anchors {
-            right: durationLabel.left
+            right: timeEntryDataColumn.left
             verticalCenter: parent.verticalCenter
             rightMargin: 10
         }
+        text: "Project"
 
 
     }
 
-    Label {
-        id: durationLabel
+    Column {
+        id: timeEntryDataColumn
 
         anchors {
             right: resumeButton.left
             verticalCenter: parent.verticalCenter
             rightMargin: 10
         }
+        width: startStopTimeRow.width
 
-        verticalAlignment: Label.AlignVCenter
+        spacing: 5
+
+        Label {
+            id: durationLabel
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "10:10:10"
+
+            verticalAlignment: Label.AlignVCenter
+            horizontalAlignment: Label.AlignHCenter
+
+        }
+
+        Row {
+            id: startStopTimeRow
+            visible: mouseArea.hovered
+            spacing: 5
+
+            Label {
+                id: startTimeLabel
+                text: "10:10:10"
+
+                verticalAlignment: Label.AlignVCenter
+                horizontalAlignment: Label.AlignHCenter
+            }
+
+            Label {
+                id: endTimeLabel
+                text: "10:10:10"
+
+                verticalAlignment: Label.AlignVCenter
+                horizontalAlignment: Label.AlignHCenter
+            }
+
+        }
 
     }
+
+
 
     RoundButton {
         id: resumeButton
@@ -61,19 +114,55 @@ Item {
             rightMargin: 10
             verticalCenter: parent.verticalCenter
         }
-        width: 40
+        width: 50
         height: width
+        visible: mouseArea.hovered
+        Material.elevation: 0
 
-//        Image {
-//            id: resumeIcon
-//            source: "file"
-//        }
-//        ColorOverlay {
+        Image {
+            id: resumeIcon
+            anchors.centerIn: parent
+            width: parent.width * 0.6
+            height: parent.height * 0.6
+            anchors.horizontalCenterOffset: 2
+            source: "qrc:/Resources/icons/play-button.svg"
+            sourceSize: Qt.size(resumeIcon.width, resumeIcon.height)
+            visible: false
 
-//        }
+        }
+        ColorOverlay {
+            anchors.fill: resumeIcon
+            source: resumeIcon
+            color: Material.color(settings.accent)
+            antialiasing: true
+        }
     }
 
     MouseArea {
+        id: mouseArea
+        property bool hovered: false
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onEntered: {
+            hovered = true
+        }
+        onExited: {
+            hovered = false
+        }
+        propagateComposedEvents: true
 
+        onClicked: {
+            mouse.accepted = mouse.button == Qt.RightButton
+            //TODO: open context menu
+        }
+        onPressed: {
+            mouse.accepted = mouse.button == Qt.RightButton
+        }
+        onReleased: {
+            mouse.accepted = mouse.button == Qt.RightButton
+        }
     }
+
+
 }

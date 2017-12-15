@@ -23,7 +23,7 @@ Item {
         }
         spacing: 10
 
-        model: root.timeEntryModel
+        model: 10//root.timeEntryModel
 
         section.property: "startDate"
         section.criteria: ViewSection.FullString

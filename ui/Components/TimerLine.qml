@@ -6,6 +6,7 @@ ToolBar {
     id: root
     height: 60 /** uiScale.yScale*/
     Material.elevation: 1
+    Material.background: Material.Grey
 
     QtObject {
         id: internal
