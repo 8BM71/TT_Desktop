@@ -1,6 +1,7 @@
 #include "webservice.h"
 #include <QTimer>
 #include <QDebug>
+#include <QTime>
 #include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -194,12 +195,12 @@ void WebService::getAllTasks(const QString &ownerId, TasksModelPtr taskModel, Su
 void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr timeModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
-                            "workspaces(ownerId: \"%1\") {"
-                            "tasks {"
-                            "id timeEntry {"
-                            "id duration endDate startDate}"
-                            "}"
-                            "}"
+                                "workspaces(ownerId: \"%1\") {"
+                                    "tasks {"
+                                        "id timeEntries {"
+                                            "id duration endDate startDate}"
+                                         "}"
+                                    "}"
                             "}").arg(ownerId);
 
     postRequest(query, [this, timeModel, successCallback](ResponsePtr resp) {
@@ -233,29 +234,46 @@ void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr t
                                     QJsonObject task = taskValue.toObject();
                                     QString taskId = task.value("id").toString("");
 
-                                    QJsonObject timeEntry = task.value("timeEntry").toObject(QJsonObject());
+                                    QJsonArray timeArray = task.value("timeEntries").toArray(QJsonArray());
 
-                                    QString timeEntryId = timeEntry.value("id").toString("");
-                                    qint64 duration = timeEntry.value("duration").toVariant().toLongLong();
+                                    for(auto timeValue : timeArray)
+                                    {
+                                        if (timeValue.isObject())
+                                        {
+                                            QJsonObject timeEntry = timeValue.toObject();
 
-                                    QDateTime startDateTime;
-                                    startDateTime.setMSecsSinceEpoch(timeEntry["startDate"].toString("").toLongLong());
+                                            QString timeEntryId = timeEntry.value("id").toString("");
 
-                                    QDateTime endDateTime;
-                                    endDateTime.setMSecsSinceEpoch(timeEntry["endDate"].toString("").toLongLong());
 
-                                    auto timeEntryItem = std::make_shared<TimeEntry>();
+                                            QTime time(0, 0, 0, 0);
+                                            time = time.addMSecs(static_cast<int>(timeEntry.value("duration").toVariant().toLongLong()));
 
-                                    timeEntryItem->id = timeEntryId;
-                                    timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
-                                    timeEntryItem->startTime = startDateTime.time().toString("hh.mm.ss");
-                                    timeEntryItem->duration = QString::number(duration);
-                                    timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
-                                    timeEntryItem->endTime = endDateTime.time().toString("hh.mm.ss");
-                                    timeEntryItem->taskId = taskId;
+                                            QString durationAsString = time.toString("hh:mm:ss");
 
-                                    timeModel->addItem(timeEntryItem);
+                                            QDateTime startDateTime;
+                                            qint64 startDateValue = timeEntry["startDate"].toString("").toLongLong();
+                                            if (startDateValue > 0)
+                                                startDateTime.setMSecsSinceEpoch(startDateValue);
 
+                                            QDateTime endDateTime;
+                                            qint64 endDateValue = timeEntry["endDate"].toString("").toLongLong();
+                                            if (endDateValue > 0)
+                                                endDateTime.setMSecsSinceEpoch(endDateValue);
+
+                                            auto timeEntryItem = std::make_shared<TimeEntry>();
+
+                                            timeEntryItem->id = timeEntryId;
+                                            timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
+                                            timeEntryItem->startTime = startDateTime.time().toString("hh:mm:ss");
+                                            timeEntryItem->duration = durationAsString;
+                                            timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
+                                            timeEntryItem->endTime = endDateTime.time().toString("hh:mm:ss");
+                                            timeEntryItem->taskId = taskId;
+
+                                            timeModel->addItem(timeEntryItem);
+
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -534,7 +552,7 @@ void WebService::startTask(const QString &taskId, TimeEntryPtr timeEntry, Succes
 
                         QString dateAsString = dateTime.date().toString("dd.MM.yy");
 
-                        QString timeAsString = dateTime.time().toString("hh.mm.ss");
+                        QString timeAsString = dateTime.time().toString("hh:mm:ss");
 
                         timeEntry->id = timeId;
                         timeEntry->taskId = taskId;
@@ -579,7 +597,11 @@ void WebService::stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback successCa
                     QJsonObject resultObject = dataObject.value("stopTimeEntry").toObject(QJsonObject());
                     if (!resultObject.isEmpty())
                     {
-                        QString duration = resultObject.value("duration").toVariant().toString();
+                        QTime time(0, 0, 0, 0);
+                        time = time.addMSecs(static_cast<int>(resultObject.value("duration").toVariant().toLongLong()));
+
+                        QString durationAsString = time.toString("hh:mm:ss");
+
                         QString endDate = resultObject.value("endDate").toString();
 
                         QDateTime dateTime;
@@ -588,11 +610,11 @@ void WebService::stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback successCa
 
                         QString dateAsString = dateTime.date().toString("dd.MM.yy");
 
-                        QString timeAsString = dateTime.time().toString("hh.mm.ss");
+                        QString timeAsString = dateTime.time().toString("hh:mm:ss");
 
                         timeEntry->endDate = dateAsString;
                         timeEntry->endTime = timeAsString;
-                        timeEntry->duration = duration;
+                        timeEntry->duration = durationAsString;
 
                         successCallback(true, QString("Time entry '%1' stopped").arg(timeEntry->id));
                     }

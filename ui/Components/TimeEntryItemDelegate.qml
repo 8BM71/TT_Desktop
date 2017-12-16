@@ -6,11 +6,11 @@ import QtGraphicalEffects 1.0
 Item {
     id: root
 
-    property alias taskName: taskNameLabel.text
+    property var task: null
     property alias projectName: projectNameLabel.text
     property alias duration: durationLabel.text
-    property var startTime
-    property var endTime
+    property alias startTime: startTimeLabel.text
+    property alias endTime: endTimeLabel.text
     property var contextMenu: null
 
     Pane {
@@ -27,7 +27,7 @@ Item {
             right: timeEntriesShowButton.left
             rightMargin: 10
         }
-        text: "Taskkk"
+        text: task != null ? task.name : ""
 
     }
 
@@ -74,7 +74,6 @@ Item {
         Label {
             id: durationLabel
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "10:10:10"
 
             verticalAlignment: Label.AlignVCenter
             horizontalAlignment: Label.AlignHCenter
@@ -88,7 +87,6 @@ Item {
 
             Label {
                 id: startTimeLabel
-                text: "10:10:10"
 
                 verticalAlignment: Label.AlignVCenter
                 horizontalAlignment: Label.AlignHCenter
@@ -96,7 +94,6 @@ Item {
 
             Label {
                 id: endTimeLabel
-                text: "10:10:10"
 
                 verticalAlignment: Label.AlignVCenter
                 horizontalAlignment: Label.AlignHCenter

@@ -20,6 +20,7 @@ class LogicCore : public QObject
     Q_PROPERTY(TimeEntriesModel* timeEntriesModel READ timeEntriesModel NOTIFY timeEntriesModelChanged)
     Q_PROPERTY(QString timerDuration READ timerDuration NOTIFY timerDurationChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(bool waiting READ waiting NOTIFY waitingChanged)
 
 public:
     explicit LogicCore(QObject *parent = nullptr);
@@ -37,6 +38,8 @@ public:
 
     bool running() const;
 
+    bool waiting() const;
+
 signals:
     void workspacesModelChanged();
 
@@ -49,6 +52,8 @@ signals:
     void timerDurationChanged(QString timerDuration);
 
     void runningChanged(bool running);
+
+    void waitingChanged(bool waiting);
 
 public slots:
     // Task, time entry methods
@@ -120,6 +125,7 @@ private:
     int m_timerId;
     TimeEntryPtr m_currentTimeEntry;
     TaskPtr m_currentTask;
+    bool m_waiting;
 };
 
 #endif // LOGICCORE_H

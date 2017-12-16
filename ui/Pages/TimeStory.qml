@@ -23,7 +23,7 @@ Item {
         }
         spacing: 10
 
-        model: 10//root.timeEntryModel
+        model: root.timeEntryModel
 
         section.property: "startDate"
         section.criteria: ViewSection.FullString
@@ -52,15 +52,13 @@ Item {
 
         delegate: TimeEntryItemDelegate {
 
-            property var task: taskModel.getItemData(model.task)
-
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 20
             height: 50 /** uiScale.yScale*/
 
-            taskName: task.name
+            task: root.taskModel.getItemData(model.task)
             duration: model.duration
-            projectName: projectModel.getItemData(task.project).name
+            projectName: root.projectModel.getItemData(task.project).name
             startTime: model.startTime
             endTime: model.endTime
         }

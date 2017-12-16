@@ -26,6 +26,14 @@ ToolBar {
         font.pixelSize: 18
     }
 
+    Connections {
+        target: core
+        onRunningChanged: {
+            if (!core.running)
+                newTaskName.clear()
+        }
+    }
+
     ComboBox {
         id: projectsComboBox
         anchors {
@@ -77,7 +85,7 @@ ToolBar {
 
         Material.elevation: 0
 
-        Material.background: core.running ? Material.Red : Material.Green
+        Material.background: core.waiting ? Material.Yellow : core.running ? Material.Red : Material.Green
 
         text: core.running ? qsTr("Stop") : qsTr("Start")
         onClicked: {

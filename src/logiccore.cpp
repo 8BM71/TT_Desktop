@@ -12,6 +12,7 @@ LogicCore::LogicCore(QObject *parent)
     , m_timerDuration("00:00:00")
     , m_running(false)
     , m_timerId(-1)
+    , m_waiting(false)
 {
     m_currentUser.id = "42cfb602-f544-4b1b-b01d-63cd6a0b644f";
     m_workspacesModel = std::make_shared<WorkspacesModel>();
@@ -60,8 +61,17 @@ bool LogicCore::running() const
     return m_running;
 }
 
+bool LogicCore::waiting() const
+{
+    return m_waiting;
+}
+
 void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 {
+    if (m_waiting)
+        return;
+    m_waiting = true;
+    emit this->waitingChanged(m_waiting);
     m_currentTask = std::make_shared<Task>();
 
     m_webService.createTask(taskName, projectId, m_currentTask, [this](bool success, QString info){
@@ -76,6 +86,10 @@ void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 
 void LogicCore::stopTask()
 {
+    if (m_waiting)
+        return;
+    m_waiting = true;
+    emit this->waitingChanged(m_waiting);
     m_webService.stopTimeEntry(m_currentTimeEntry, [this](bool success, QString info){
         qCDebug(logicCore) << QString("Stop task success: %0, info: %1").arg(success).arg(info);
         if (success)
@@ -85,8 +99,12 @@ void LogicCore::stopTask()
                 killTimer(m_timerId);
                 m_timerId = -1;
             }
+            m_waiting = false;
+            emit this->waitingChanged(m_waiting);
             m_running = false;
             emit this->runningChanged(m_running);
+            m_timerDuration = "00:00:00";
+            emit this->timerDurationChanged(m_timerDuration);
             m_tasksModel->addItem(m_currentTask);
             m_timeEntriesModel->addItem(m_currentTimeEntry);
         }
@@ -106,6 +124,8 @@ void LogicCore::startExistTask(const QString &taskId)
                 killTimer(m_timerId);
                 m_timerId = -1;
             }
+            m_waiting = false;
+            emit this->waitingChanged(m_waiting);
             m_running = true;
             emit this->runningChanged(m_running);
             this->updateTimerDuration();

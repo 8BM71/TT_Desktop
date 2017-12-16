@@ -4,4 +4,23 @@ import QtQuick.Controls 2.2
 Item {
     id: root
     objectName: "TasksPage"
+
+    property var model
+
+    Row {
+
+        ComboBox {
+
+        }
+
+        ComboBox {
+
+        }
+
+    }
+
+    ListView {
+
+    }
+
 }
