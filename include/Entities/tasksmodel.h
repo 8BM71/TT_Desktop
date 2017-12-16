@@ -33,6 +33,7 @@ public slots:
     QVariantMap getItemData(const QString &id);
 
     void addItem(const QString &id, const QString &projectId, const QString &name, const QString &description = "");
+    void addItem(TaskPtr item);
     void removeItem(const QString &id);
     void removeItem(const int index);
 

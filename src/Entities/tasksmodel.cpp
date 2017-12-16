@@ -103,9 +103,17 @@ void TasksModel::addItem(const QString &id, const QString &projectId, const QStr
     newItem->projectId = projectId;
     newItem->description = description;
 
+    addItem(newItem);
+}
+
+void TasksModel::addItem(TaskPtr item)
+{
+    if (item == nullptr)
+        return;
     beginInsertRows(QModelIndex(), count(), count());
-    m_items.append(newItem);
+    m_items.append(item);
     endInsertRows();
+    emit countChanged(count());
 }
 
 void TasksModel::removeItem(const QString &id)

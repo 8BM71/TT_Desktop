@@ -76,7 +76,21 @@ void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 
 void LogicCore::stopTask()
 {
-    //TODO: implement
+    m_webService.stopTimeEntry(m_currentTimeEntry, [this](bool success, QString info){
+        qCDebug(logicCore) << QString("Stop task success: %0, info: %1").arg(success).arg(info);
+        if (success)
+        {
+            if (m_timerId != -1)
+            {
+                killTimer(m_timerId);
+                m_timerId = -1;
+            }
+            m_running = false;
+            emit this->runningChanged(m_running);
+            m_tasksModel->addItem(m_currentTask);
+            m_timeEntriesModel->addItem(m_currentTimeEntry);
+        }
+    });
 }
 
 void LogicCore::startExistTask(const QString &taskId)
