@@ -455,14 +455,14 @@ void WebService::deleteProject(const QString &projectId, SuccessCallback success
     });
 }
 
-void WebService::createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback)
+void WebService::createTask(const QString &name, const QString &projectId, TaskPtr task, SuccessCallback successCallback)
 {
     QString query = QString("mutation M {"
                             "createTask(projId: \"%1\", name: \"%2\") {"
-                            "id name timeEntry {id startDate}}"
+                                "id name}"
                             "}").arg(projectId).arg(name);
 
-    postRequest(query, [this, successCallback, taskModel, projectId, timeModel](ResponsePtr resp) {
+    postRequest(query, [this, successCallback, task, projectId](ResponsePtr resp) {
         if (resp->isError)
         {
             successCallback(false, resp->errorString);
@@ -483,38 +483,118 @@ void WebService::createTask(const QString &name, const QString &projectId, Tasks
                         QString taskId = resultObject.value("id").toString("");
                         QString taskName = resultObject.value("name").toString("");
 
-                        QJsonObject timeEntry = resultObject.value("timeEntry").toObject(QJsonObject());
+                        task->id = taskId;
+                        task->name = taskName;
+                        task->projectId = projectId;
 
-                        QString timeId = "";
+                        successCallback(true, QString("Task '%0' created with id: %1").arg(taskName).arg(taskId));
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
 
-                        if (!timeEntry.isEmpty())
-                        {
-                            timeId = timeEntry.value("id").toString("");
-                            QString startDate = timeEntry.value("startDate").toString();
+void WebService::startTask(const QString &taskId, TimeEntryPtr timeEntry, SuccessCallback successCallback)
+{
 
-                            QDateTime dateTime;
+    QString query = QString("mutation M {"
+                            "startTask(taskId: \"%1\") {"
+                                "id startDate}"
+                            "}").arg(taskId);
 
-                            dateTime.setMSecsSinceEpoch(startDate.toLongLong());
+    postRequest(query, [this, successCallback, timeEntry, taskId](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("startTask").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString timeId = resultObject.value("id").toString("");
+                        QString startDate = resultObject.value("startDate").toString();
 
-                            QString dateAsString = dateTime.date().toString("dd.MM.yy");
+                        QDateTime dateTime;
 
-                            QString timeAsString = dateTime.time().toString("hh.mm.ss");
+                        dateTime.setMSecsSinceEpoch(startDate.toLongLong());
 
-                            auto timeEntryItem = std::make_shared<TimeEntry>();
-                            timeEntryItem->id = timeId;
-                            timeEntryItem->taskId = taskId;
-                            timeEntryItem->startTime = timeAsString;
-                            timeEntryItem->startDate = dateAsString;
-                            timeEntryItem->startMSecsSinceEpoch = startDate.toLongLong();
-                            timeModel->addItem(timeEntryItem);
+                        QString dateAsString = dateTime.date().toString("dd.MM.yy");
 
+                        QString timeAsString = dateTime.time().toString("hh.mm.ss");
 
-                            qCDebug(webService) << startDate << dateAsString << timeAsString;
+                        timeEntry->id = timeId;
+                        timeEntry->taskId = taskId;
+                        timeEntry->startDate = dateAsString;
+                        timeEntry->startTime = timeAsString;
+                        timeEntry->startMSecsSinceEpoch = startDate.toLongLong();
 
-//                            timeModel->addItem(timeId, taskId, dateAsString, timeAsString);
-                        }
-                        taskModel->addItem(taskId, projectId, taskName);
-                        successCallback(true, timeId); //NOTE: may be return timentry and task
+                        successCallback(true, QString("Time entry created with id: %1").arg(timeId));
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
+
+void WebService::stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback successCallback)
+{
+    QString query = QString("mutation M {"
+                            "stopTimeEntry(timeEntryId: \"%1\") {"
+                                "id duration endDate}"
+                            "}").arg(timeEntry->id);
+
+    postRequest(query, [this, successCallback, timeEntry](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("stopTimeEntry").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString duration = resultObject.value("duration").toVariant().toString();
+                        QString endDate = resultObject.value("endDate").toString();
+
+                        QDateTime dateTime;
+
+                        dateTime.setMSecsSinceEpoch(endDate.toLongLong());
+
+                        QString dateAsString = dateTime.date().toString("dd.MM.yy");
+
+                        QString timeAsString = dateTime.time().toString("hh.mm.ss");
+
+                        timeEntry->endDate = dateAsString;
+                        timeEntry->endTime = timeAsString;
+                        timeEntry->duration = duration;
+
+                        successCallback(true, QString("Time entry '%1' stopped").arg(timeEntry->id));
                     }
                 }
                 else

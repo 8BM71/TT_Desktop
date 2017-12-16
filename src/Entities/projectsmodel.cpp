@@ -87,20 +87,12 @@ ProjectPtr ProjectsModel::getItem(const int index)
 
 QVariantMap ProjectsModel::getItemData(const QString &id)
 {
-    auto item = getItem(id);
-    if (item)
-    {
-        QVariantMap itemData;
+    return convertItemToMap(getItem(id));
+}
 
-        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
-        itemData.insert(roleNames().value(Roles::NameRole), item->name);
-        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
-        itemData.insert(roleNames().value(Roles::WorkspaceRole), item->workspaceId);
-
-        return itemData;
-
-    }
-    return QVariantMap();
+QVariantMap ProjectsModel::getItemData(const int index)
+{
+    return convertItemToMap(getItem(index));
 }
 
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
@@ -138,6 +130,23 @@ void ProjectsModel::removeItem(const int index)
     endRemoveRows();
 
     emit countChanged(count());
+}
+
+QVariantMap ProjectsModel::convertItemToMap(ProjectPtr item)
+{
+    if (item)
+    {
+        QVariantMap itemData;
+
+        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
+        itemData.insert(roleNames().value(Roles::NameRole), item->name);
+        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
+        itemData.insert(roleNames().value(Roles::WorkspaceRole), item->workspaceId);
+
+        return itemData;
+
+    }
+    return QVariantMap();
 }
 
 

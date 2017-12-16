@@ -52,11 +52,11 @@ signals:
 
 public slots:
     // Task, time entry methods
-    void startNewTask(const QString &taskName, int projectIndex);
-
-    void startExistTask();
+    void startNewTask(const QString &taskName, const QString &projectId);
 
     void stopTask();
+
+    void startExistTask(const QString &taskId);
 
     void deleteTask();
 
@@ -106,17 +106,20 @@ private:
 
     void updateTimeEntriesModel();
 
+    void updateTimerDuration();
+
 private:
     WebService m_webService;
-    Entities::User m_currentUser;
-    std::shared_ptr<WorkspacesModel> m_workspacesModel;
-    std::shared_ptr<ProjectsModel> m_projectModel;
-    std::shared_ptr<TasksModel> m_tasksModel;
-    std::shared_ptr<TimeEntriesModel> m_timeEntriesModel;
+    User m_currentUser;
+    WorkspacesModelPtr m_workspacesModel;
+    ProjectsModelPtr m_projectModel;
+    TasksModelPtr m_tasksModel;
+    TimeEntriesModelPtr m_timeEntriesModel;
     QString m_timerDuration;
     bool m_running;
     int m_timerId;
     TimeEntryPtr m_currentTimeEntry;
+    TaskPtr m_currentTask;
 };
 
 #endif // LOGICCORE_H

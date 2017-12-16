@@ -60,14 +60,31 @@ bool LogicCore::running() const
     return m_running;
 }
 
-void LogicCore::startNewTask(const QString &taskName, int projectIndex)
+void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 {
-    auto project = m_projectModel->getItem(projectIndex);
-    if (project == nullptr)
-        return;
-    QString projectId = project->id;
-    m_webService.createTask(taskName, projectId, m_tasksModel, m_timeEntriesModel, [this](bool success, QString timeId){
-        qCDebug(logicCore) << QString("Create task success: %0").arg(success);
+    m_currentTask = std::make_shared<Task>();
+
+    m_webService.createTask(taskName, projectId, m_currentTask, [this](bool success, QString info){
+        qCDebug(logicCore) << QString("Create task success: %0, info: %1").arg(success).arg(info);
+        if (success)
+        {
+            this->startExistTask(m_currentTask->id);
+        }
+
+    });
+}
+
+void LogicCore::stopTask()
+{
+    //TODO: implement
+}
+
+void LogicCore::startExistTask(const QString &taskId)
+{
+    m_currentTimeEntry = std::make_shared<TimeEntry>();
+
+    m_webService.startTask(taskId, m_currentTimeEntry, [this](bool success, QString info){
+        qCDebug(logicCore) << QString("Start task success: %0, info: %1").arg(success).arg(info);
         if (success)
         {
             if (m_timerId != -1)
@@ -75,23 +92,15 @@ void LogicCore::startNewTask(const QString &taskName, int projectIndex)
                 killTimer(m_timerId);
                 m_timerId = -1;
             }
-            m_currentTimeEntry = m_timeEntriesModel->getItem(timeId);
+            m_running = true;
+            emit this->runningChanged(m_running);
+            this->updateTimerDuration();
 
             m_timerId = startTimer(1000);
         }
-
     });
 }
 
-void LogicCore::startExistTask()
-{
-    //TODO: implement
-}
-
-void LogicCore::stopTask()
-{
-    //TODO: implement
-}
 
 void LogicCore::deleteTask()
 {
@@ -192,8 +201,9 @@ void LogicCore::updateWorkspacesModel()
 
 void LogicCore::updateProjectsModel()
 {
-    m_webService.getAllProjects(m_currentUser.id, m_projectModel, [](bool succes, QString info){
+    m_webService.getAllProjects(m_currentUser.id, m_projectModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update projects success: %0, info: %1").arg(succes).arg(info);
+        emit this->projectsModelChanged();
     });
 }
 
@@ -211,17 +221,22 @@ void LogicCore::updateTimeEntriesModel()
     });
 }
 
+void LogicCore::updateTimerDuration()
+{
+    qint64 duration = std::abs(QDateTime::currentDateTime().toMSecsSinceEpoch() - m_currentTimeEntry->startMSecsSinceEpoch);
+
+    QTime time(0, 0, 0, 0);
+    time = time.addMSecs(static_cast<int>(duration));
+    m_timerDuration = time.toString("hh:mm:ss");
+
+    emit this->timerDurationChanged(m_timerDuration);
+}
+
 
 void LogicCore::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == m_timerId)
     {
-        qint64 duration = QDateTime::currentMSecsSinceEpoch() - m_currentTimeEntry->startMSecsSinceEpoch;
-
-        QTime time(0, 0);
-        time = time.addMSecs(static_cast<int>(duration));
-        m_timerDuration = time.toString("hh:mm: ss");
-
-        emit this->timerDurationChanged(m_timerDuration);
+        updateTimerDuration();
     }
 }

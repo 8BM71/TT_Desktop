@@ -52,9 +52,11 @@ public:
 
     void deleteProject(const QString &projectId, SuccessCallback successCallback);
 
-    void createTask(const QString &name, const QString &projectId, TasksModelPtr taskModel, TimeEntriesModelPtr timeModel, SuccessCallback successCallback);
+    void createTask(const QString &name, const QString &projectId, TaskPtr task, SuccessCallback successCallback);
 
-//    void createTimeEntry();
+    void startTask(const QString &taskId, TimeEntryPtr timeEntry, SuccessCallback successCallback);
+
+    void stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback successCallback);
 
     //TODO: authorization
 

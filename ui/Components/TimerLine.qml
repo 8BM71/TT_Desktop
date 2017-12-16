@@ -8,11 +8,6 @@ ToolBar {
     Material.elevation: 1
     Material.background: Material.Grey
 
-    QtObject {
-        id: internal
-        property bool running: false
-    }
-
     TextField {
         id: newTaskName
         anchors {
@@ -25,7 +20,7 @@ ToolBar {
 
         placeholderText: qsTr("New task...")
 
-        readOnly: internal.running
+        readOnly: core.running
 
         width: parent.width * 0.5
         font.pixelSize: 18
@@ -46,6 +41,14 @@ ToolBar {
 
         textRole: "name"
         model: core.projectsModel
+
+        Connections {
+            target: core
+            onProjectsModelChanged: {
+                if (projectsComboBox.currentIndex == -1 && projectsComboBox.model.count > 0)
+                    projectsComboBox.currentIndex = 0
+            }
+        }
     }
 
     Label {
@@ -58,7 +61,7 @@ ToolBar {
         verticalAlignment: Label.AlignVCenter
         horizontalAlignment: Label.AlignHCenter
 
-        text: core.timerDuration//"00.00.00"
+        text: core.timerDuration
         font.pixelSize: 16
     }
 
@@ -74,12 +77,14 @@ ToolBar {
 
         Material.elevation: 0
 
-        Material.background: internal.running ? Material.Red : Material.Green
+        Material.background: core.running ? Material.Red : Material.Green
 
-        text: internal.running ? qsTr("Stop") : qsTr("Start")
+        text: core.running ? qsTr("Stop") : qsTr("Start")
         onClicked: {
-            core.startNewTask(newTaskName.text, projectsComboBox.currentIndex)
-            internal.running = !internal.running
+            if (core.running)
+                core.stopTask()
+            else
+                core.startNewTask(newTaskName.text, core.projectsModel.getItemData(projectsComboBox.currentIndex).itemId)
         }
     }
 }

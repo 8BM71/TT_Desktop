@@ -33,6 +33,7 @@ public slots:
     ProjectPtr getItem(const int index);
 
     QVariantMap getItemData(const QString &id);
+    QVariantMap getItemData(const int index);
 
     void addItem(const QString &id, const QString &name, const QString &workscpaceId);
     void removeItem(const QString &id);
@@ -41,6 +42,8 @@ public slots:
 signals:
     void countChanged(int count);
 
+private:
+    QVariantMap convertItemToMap(ProjectPtr item);
 private:
     QList<ProjectPtr> m_items;
 };
