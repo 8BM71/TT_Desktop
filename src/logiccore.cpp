@@ -20,10 +20,11 @@ LogicCore::LogicCore(QObject *parent)
     m_tasksModel = std::make_shared<TasksModel>();
     m_timeEntriesModel = std::make_shared<TimeEntriesModel>();
 
-    updateWorkspacesModel();
-    updateProjectsModel();
-    updateTasksModel();
-    updateTimeEntriesModel();
+//    updateWorkspacesModel();
+//    updateProjectsModel();
+//    updateTasksModel();
+//    updateTimeEntriesModel();
+    m_webService.createUser();
 }
 
 LogicCore::~LogicCore()

@@ -12,6 +12,7 @@
 #include "projectsmodel.h"
 #include "tasksmodel.h"
 #include "timeentriesmodel.h"
+#include <QJsonValue>
 
 struct Response
 {
@@ -35,6 +36,8 @@ class WebService : public QObject
 public:
     explicit WebService(QObject *parent = nullptr);
     ~WebService();
+
+    void createUser();
 
     void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
@@ -68,7 +71,7 @@ public slots:
 private:
     void getRequest(const QNetworkRequest& request, PerformCallback callback);
 
-    void postRequest(const QString &query, PerformCallback callback);
+    void postRequest(const QString &query, PerformCallback callback, QJsonValue vars = QJsonValue());
 
     void requestFunction(QNetworkReply * reply, PerformCallback callback);
 

@@ -14,11 +14,55 @@ WebService::WebService(QObject *parent)
     : QObject(parent)
     , m_waitTime(30 * 1000)
 {
-    m_host = "http://54.69.134.117:8008";
+//    m_host = "http://54.69.134.117:8008";
+    m_host = "https://tttpu.tk";
 }
 
 WebService::~WebService()
 {
+}
+
+void WebService::createUser()
+{
+    QString query = QString("mutation M ($usr: UserInput!){"
+                                "createUser(user: $usr)"
+                            "}");
+    QJsonObject userParams{
+        {"usr",
+            QJsonObject {
+                {"username", "username"},
+                {"name", "user"},
+                {"email", "user1234@mail.com"}
+            }
+        }
+    };
+
+    postRequest(query, [this](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            qDebug() << "Error" << resp->errorString;
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                 qDebug() << resp->data;
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QString userId = dataObject.value("createUser").toString("");
+                    qDebug() << "Created user id" << userId;
+                }
+                else
+                    qDebug() << "Incorrect response from server";
+            }
+            else
+                qDebug() << QString("Request status not OK, status code:%0").arg(resp->statusCode);
+        }
+    }, userParams);
 }
 
 void WebService::getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback)
@@ -634,13 +678,14 @@ void WebService::getRequest(const QNetworkRequest &request, PerformCallback call
     requestFunction(reply, callback);
 }
 
-void WebService::postRequest(const QString &query, PerformCallback callback)
+void WebService::postRequest(const QString &query, PerformCallback callback, QJsonValue vars)
 {
     QString requestUrl(m_host + "/graphql");
 
     QJsonObject requestObject
     {
-        {"query", QJsonValue(query)}
+        {"query", query},
+        {"vars", vars}
     };
 
     QJsonDocument doc(requestObject);
