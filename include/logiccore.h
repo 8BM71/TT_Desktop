@@ -115,7 +115,7 @@ private:
 
 private:
     WebService m_webService;
-    User m_currentUser;
+    UserPtr m_currentUser;
     WorkspacesModelPtr m_workspacesModel;
     ProjectsModelPtr m_projectModel;
     TasksModelPtr m_tasksModel;

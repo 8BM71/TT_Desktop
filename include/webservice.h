@@ -37,7 +37,7 @@ public:
     explicit WebService(QObject *parent = nullptr);
     ~WebService();
 
-    void createUser();
+    void createUser(const QString &username, const QString &email, UserPtr user, SuccessCallback successCallback);
 
     void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
@@ -56,6 +56,8 @@ public:
     void deleteProject(const QString &projectId, SuccessCallback successCallback);
 
     void createTask(const QString &name, const QString &projectId, TaskPtr task, SuccessCallback successCallback);
+
+    void deleteTask(const QString &taskId, SuccessCallback successCallback);
 
     void startTask(const QString &taskId, TimeEntryPtr timeEntry, SuccessCallback successCallback);
 
