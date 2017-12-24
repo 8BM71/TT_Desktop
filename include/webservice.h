@@ -39,6 +39,13 @@ public:
 
     void createUser(const QString &username, const QString &email, UserPtr user, SuccessCallback successCallback);
 
+    void updateAllEntities(const QString &ownerId,
+                           WorkspacesModelPtr workspaceModel,
+                           ProjectsModelPtr projectModel,
+                           TasksModelPtr taskModel,
+                           TimeEntriesModelPtr timeModel,
+                           SuccessCallback successCallback);
+
     void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
     void getAllProjects(const QString &ownerId, ProjectsModelPtr projectModel, SuccessCallback successCallback);

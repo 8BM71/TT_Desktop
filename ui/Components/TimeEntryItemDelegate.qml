@@ -13,6 +13,8 @@ Item {
     property alias endTime: endTimeLabel.text
     property var contextMenu: null
 
+    signal continueTask()
+
     Pane {
         anchors.fill: parent
         Material.elevation: 2
@@ -55,15 +57,13 @@ Item {
             rightMargin: 10
         }
         text: "Project"
-
-
     }
 
     Column {
         id: timeEntryDataColumn
 
         anchors {
-            right: resumeButton.left
+            right: continueButton.left
             verticalCenter: parent.verticalCenter
             rightMargin: 10
         }
@@ -103,10 +103,8 @@ Item {
 
     }
 
-
-
     RoundButton {
-        id: resumeButton
+        id: continueButton
         anchors {
             right: parent.right
             rightMargin: 10
@@ -118,21 +116,23 @@ Item {
         Material.elevation: 0
 
         Image {
-            id: resumeIcon
+            id: continueIcon
             anchors.centerIn: parent
             width: parent.width * 0.6
             height: parent.height * 0.6
             anchors.horizontalCenterOffset: 2
             source: "qrc:/Resources/icons/play-button.svg"
-            sourceSize: Qt.size(resumeIcon.width, resumeIcon.height)
+            sourceSize: Qt.size(continueIcon.width, continueIcon.height)
             visible: false
-
         }
         ColorOverlay {
-            anchors.fill: resumeIcon
-            source: resumeIcon
+            anchors.fill: continueIcon
+            source: continueIcon
             color: Material.color(settings.accent)
             antialiasing: true
+        }
+        onClicked: {
+            root.continueTask()
         }
     }
 
@@ -184,6 +184,4 @@ Item {
             }
         }
     }
-
-
 }

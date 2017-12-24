@@ -1,5 +1,6 @@
 #include "timeentriesmodel.h"
 #include <QUuid>
+#include <QDebug>
 
 namespace Entities {
 

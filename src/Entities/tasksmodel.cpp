@@ -1,5 +1,6 @@
 #include "tasksmodel.h"
 #include <QUuid>
+#include <QDebug>
 
 namespace Entities {
 
@@ -88,7 +89,6 @@ QVariantMap TasksModel::getItemData(const QString &id)
         itemData.insert(roleNames().value(Roles::NameRole), item->name);
         itemData.insert(roleNames().value(Roles::ProjectRole), item->projectId);
         itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
-
         return itemData;
     }
     return QVariantMap();

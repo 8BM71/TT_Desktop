@@ -61,6 +61,9 @@ Item {
             projectName: root.projectModel.getItemData(task.project).name
             startTime: model.startTime
             endTime: model.endTime
+            onContinueTask: {
+                core.startExistTask(task.itemId)
+            }
         }
 
 

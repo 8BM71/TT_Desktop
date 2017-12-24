@@ -20,13 +20,11 @@ LogicCore::LogicCore(QObject *parent)
     m_tasksModel = std::make_shared<TasksModel>();
     m_timeEntriesModel = std::make_shared<TimeEntriesModel>();
 
-    updateWorkspacesModel();
-    updateProjectsModel();
-    updateTasksModel();
-    updateTimeEntriesModel();
-    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
-        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
-    });
+    m_currentUser->id = "e093e100-82aa-43a5-ba97-2812c710f716";
+    updateAll();
+//    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
+//        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
+//    });
 }
 
 LogicCore::~LogicCore()
@@ -69,6 +67,11 @@ bool LogicCore::waiting() const
     return m_waiting;
 }
 
+QString LogicCore::currentTaskName() const
+{
+    return m_currentTaskName;
+}
+
 void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 {
     if (m_waiting)
@@ -106,6 +109,7 @@ void LogicCore::stopTask()
             emit this->waitingChanged(m_waiting);
             m_running = false;
             emit this->runningChanged(m_running);
+            this->setCurrentTaskName("");
             m_timerDuration = "00:00:00";
             emit this->timerDurationChanged(m_timerDuration);
             m_tasksModel->addItem(m_currentTask);
@@ -116,6 +120,9 @@ void LogicCore::stopTask()
 
 void LogicCore::startExistTask(const QString &taskId)
 {
+    if (m_currentTask == nullptr)
+        m_currentTask = m_tasksModel->getItem(taskId);
+
     m_currentTimeEntry = std::make_shared<TimeEntry>();
 
     m_webService.startTask(taskId, m_currentTimeEntry, [this](bool success, QString info){
@@ -127,6 +134,9 @@ void LogicCore::startExistTask(const QString &taskId)
                 killTimer(m_timerId);
                 m_timerId = -1;
             }
+
+            this->setCurrentTaskName(m_currentTask->name);
+
             m_waiting = false;
             emit this->waitingChanged(m_waiting);
             m_running = true;
@@ -229,6 +239,15 @@ void LogicCore::setWorkspaceAsDefault()
     //TODO: implement
 }
 
+void LogicCore::setCurrentTaskName(QString currentTaskName)
+{
+    if (m_currentTaskName == currentTaskName)
+        return;
+
+    m_currentTaskName = currentTaskName;
+    emit currentTaskNameChanged(m_currentTaskName);
+}
+
 void LogicCore::updateWorkspacesModel()
 {
     m_webService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [](bool succes, QString info){
@@ -276,4 +295,11 @@ void LogicCore::timerEvent(QTimerEvent *event)
     {
         updateTimerDuration();
     }
+}
+
+void LogicCore::updateAll()
+{
+    m_webService.updateAllEntities(m_currentUser->id, m_workspacesModel, m_projectModel, m_tasksModel, m_timeEntriesModel, [](bool succes, QString info){
+        qCDebug(logicCore) << QString("Update all entities success: %0, info: %1").arg(succes).arg(info);
+    });
 }

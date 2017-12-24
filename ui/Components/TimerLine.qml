@@ -20,18 +20,12 @@ ToolBar {
 
         placeholderText: qsTr("New task...") + translator.trString
 
+        text: core.currentTaskName
+
         readOnly: core.running
 
         width: parent.width * 0.5
         font.pixelSize: 18
-    }
-
-    Connections {
-        target: core
-        onRunningChanged: {
-            if (!core.running)
-                newTaskName.clear()
-        }
     }
 
     ComboBox {

@@ -65,6 +65,138 @@ void WebService::createUser(const QString &username, const QString &email, UserP
     }, userParams);
 }
 
+void WebService::updateAllEntities(const QString &ownerId,
+                                   WorkspacesModelPtr workspaceModel,
+                                   ProjectsModelPtr projectModel,
+                                   TasksModelPtr taskModel,
+                                   TimeEntriesModelPtr timeModel,
+                                   SuccessCallback successCallback)
+{
+    QString query = QString("{"
+                                "workspaces(ownerId: \"%1\") {"
+                                    "id name projects { "
+                                        "id name tasks {"
+                                            "id name description timeEntries {"
+                                                "id duration endDate startDate}"
+                                            "}"
+                                        "}"
+                                    "}"
+                            "}").arg(ownerId);
+
+    postRequest(query, [this, ownerId, workspaceModel, projectModel, taskModel, timeModel, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonArray workspaceArray = dataObject.value("workspaces").toArray(QJsonArray());
+                    workspaceModel->clearModel();
+                    projectModel->clearModel();
+                    taskModel->clearModel();
+                    timeModel->clearModel();
+                    for (auto workspaceValue : workspaceArray)
+                    {
+                        if (workspaceValue.isObject())
+                        {
+                            QJsonObject workspace = workspaceValue.toObject();
+
+                            QString wsId = workspace["id"].toString("");
+                            QString wsName = workspace["name"].toString("");
+
+                            workspaceModel->addItem(wsId, wsName, ownerId);
+
+                            QJsonArray projectArray = workspace.value("projects").toArray(QJsonArray());
+
+
+                            for (auto projectValue : projectArray)
+                            {
+                                if (projectValue.isObject())
+                                {
+                                    QJsonObject project = projectValue.toObject();
+
+                                    QString projId = project["id"].toString("");
+                                    QString projName = project["name"].toString("");
+
+                                    projectModel->addItem(projId, projName, wsId);
+
+                                    QJsonArray taskArray = project.value("tasks").toArray(QJsonArray());
+
+                                    for (auto taskValue : taskArray)
+                                    {
+                                        if (taskValue.isObject())
+                                        {
+                                            QJsonObject task = taskValue.toObject();
+                                            QString taskId = task.value("id").toString("");
+                                            QString taskName = task["name"].toString("");
+                                            QString taskDesc = task["description"].toString("");
+
+                                            taskModel->addItem(taskId, projId, taskName, taskDesc);
+
+                                            QJsonArray timeArray = task.value("timeEntries").toArray(QJsonArray());
+
+                                            for(auto timeValue : timeArray)
+                                            {
+                                                if (timeValue.isObject())
+                                                {
+                                                    QJsonObject timeEntry = timeValue.toObject();
+
+                                                    QString timeEntryId = timeEntry.value("id").toString("");
+
+
+                                                    QTime time(0, 0, 0, 0);
+                                                    time = time.addMSecs(static_cast<int>(timeEntry.value("duration").toVariant().toLongLong()));
+
+                                                    QString durationAsString = time.toString("hh:mm:ss");
+
+                                                    QDateTime startDateTime;
+                                                    qint64 startDateValue = timeEntry["startDate"].toString("").toLongLong();
+                                                    if (startDateValue > 0)
+                                                        startDateTime.setMSecsSinceEpoch(startDateValue);
+
+                                                    QDateTime endDateTime;
+                                                    qint64 endDateValue = timeEntry["endDate"].toString("").toLongLong();
+                                                    if (endDateValue > 0)
+                                                        endDateTime.setMSecsSinceEpoch(endDateValue);
+
+                                                    auto timeEntryItem = std::make_shared<TimeEntry>();
+
+                                                    timeEntryItem->id = timeEntryId;
+                                                    timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
+                                                    timeEntryItem->startTime = startDateTime.time().toString("hh:mm:ss");
+                                                    timeEntryItem->duration = durationAsString;
+                                                    timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
+                                                    timeEntryItem->endTime = endDateTime.time().toString("hh:mm:ss");
+                                                    timeEntryItem->taskId = taskId;
+
+                                                    timeModel->addItem(timeEntryItem);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    successCallback(true, "All models updated");
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    });
+}
+
 void WebService::getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback)
 {
     QString query = QString("{"
@@ -240,10 +372,12 @@ void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr t
 {
     QString query = QString("{"
                                 "workspaces(ownerId: \"%1\") {"
-                                    "tasks {"
-                                        "id timeEntries {"
-                                            "id duration endDate startDate}"
-                                         "}"
+                                    "projects { "
+                                        "tasks {"
+                                            "id timeEntries {"
+                                                "id duration endDate startDate}"
+                                            "}"
+                                        "}"
                                     "}"
                             "}").arg(ownerId);
 
@@ -270,52 +404,61 @@ void WebService::getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr t
                         {
                             QJsonObject workspace = workspaceValue.toObject();
 
-                            QJsonArray taskArray = workspace.value("tasks").toArray(QJsonArray());
-                            for (auto taskValue : taskArray)
+                            QJsonArray projectArray = workspace.value("projects").toArray(QJsonArray());
+
+                            for (auto projectValue : projectArray)
                             {
-                                if (taskValue.isObject())
+                                if (projectValue.isObject())
                                 {
-                                    QJsonObject task = taskValue.toObject();
-                                    QString taskId = task.value("id").toString("");
-
-                                    QJsonArray timeArray = task.value("timeEntries").toArray(QJsonArray());
-
-                                    for(auto timeValue : timeArray)
+                                    QJsonObject project = projectValue.toObject();
+                                    QJsonArray taskArray = project.value("tasks").toArray(QJsonArray());
+                                    for (auto taskValue : taskArray)
                                     {
-                                        if (timeValue.isObject())
+                                        if (taskValue.isObject())
                                         {
-                                            QJsonObject timeEntry = timeValue.toObject();
+                                            QJsonObject task = taskValue.toObject();
+                                            QString taskId = task.value("id").toString("");
 
-                                            QString timeEntryId = timeEntry.value("id").toString("");
+                                            QJsonArray timeArray = task.value("timeEntries").toArray(QJsonArray());
+
+                                            for(auto timeValue : timeArray)
+                                            {
+                                                if (timeValue.isObject())
+                                                {
+                                                    QJsonObject timeEntry = timeValue.toObject();
+
+                                                    QString timeEntryId = timeEntry.value("id").toString("");
 
 
-                                            QTime time(0, 0, 0, 0);
-                                            time = time.addMSecs(static_cast<int>(timeEntry.value("duration").toVariant().toLongLong()));
+                                                    QTime time(0, 0, 0, 0);
+                                                    time = time.addMSecs(static_cast<int>(timeEntry.value("duration").toVariant().toLongLong()));
 
-                                            QString durationAsString = time.toString("hh:mm:ss");
+                                                    QString durationAsString = time.toString("hh:mm:ss");
 
-                                            QDateTime startDateTime;
-                                            qint64 startDateValue = timeEntry["startDate"].toString("").toLongLong();
-                                            if (startDateValue > 0)
-                                                startDateTime.setMSecsSinceEpoch(startDateValue);
+                                                    QDateTime startDateTime;
+                                                    qint64 startDateValue = timeEntry["startDate"].toString("").toLongLong();
+                                                    if (startDateValue > 0)
+                                                        startDateTime.setMSecsSinceEpoch(startDateValue);
 
-                                            QDateTime endDateTime;
-                                            qint64 endDateValue = timeEntry["endDate"].toString("").toLongLong();
-                                            if (endDateValue > 0)
-                                                endDateTime.setMSecsSinceEpoch(endDateValue);
+                                                    QDateTime endDateTime;
+                                                    qint64 endDateValue = timeEntry["endDate"].toString("").toLongLong();
+                                                    if (endDateValue > 0)
+                                                        endDateTime.setMSecsSinceEpoch(endDateValue);
 
-                                            auto timeEntryItem = std::make_shared<TimeEntry>();
+                                                    auto timeEntryItem = std::make_shared<TimeEntry>();
 
-                                            timeEntryItem->id = timeEntryId;
-                                            timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
-                                            timeEntryItem->startTime = startDateTime.time().toString("hh:mm:ss");
-                                            timeEntryItem->duration = durationAsString;
-                                            timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
-                                            timeEntryItem->endTime = endDateTime.time().toString("hh:mm:ss");
-                                            timeEntryItem->taskId = taskId;
+                                                    timeEntryItem->id = timeEntryId;
+                                                    timeEntryItem->startDate = startDateTime.date().toString("dd.MM.yy");
+                                                    timeEntryItem->startTime = startDateTime.time().toString("hh:mm:ss");
+                                                    timeEntryItem->duration = durationAsString;
+                                                    timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
+                                                    timeEntryItem->endTime = endDateTime.time().toString("hh:mm:ss");
+                                                    timeEntryItem->taskId = taskId;
 
-                                            timeModel->addItem(timeEntryItem);
+                                                    timeModel->addItem(timeEntryItem);
 
+                                                }
+                                            }
                                         }
                                     }
                                 }

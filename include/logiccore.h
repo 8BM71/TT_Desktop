@@ -21,6 +21,7 @@ class LogicCore : public QObject
     Q_PROPERTY(QString timerDuration READ timerDuration NOTIFY timerDurationChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
     Q_PROPERTY(bool waiting READ waiting NOTIFY waitingChanged)
+    Q_PROPERTY(QString currentTaskName READ currentTaskName WRITE setCurrentTaskName NOTIFY currentTaskNameChanged)
 
 public:
     explicit LogicCore(QObject *parent = nullptr);
@@ -40,6 +41,8 @@ public:
 
     bool waiting() const;
 
+    QString currentTaskName() const;
+
 signals:
     void workspacesModelChanged();
 
@@ -54,6 +57,8 @@ signals:
     void runningChanged(bool running);
 
     void waitingChanged(bool waiting);
+
+    void currentTaskNameChanged(QString currentTaskName);
 
 public slots:
     // Task, time entry methods
@@ -97,12 +102,14 @@ public slots:
 
     void setWorkspaceAsDefault();
     // !Workspace methods
+    void setCurrentTaskName(QString currentTaskName);
 
-    // QObject interface
 protected:
     void timerEvent(QTimerEvent *event);
 
 private:
+    void updateAll();
+
     void updateWorkspacesModel();
 
     void updateProjectsModel();
@@ -126,6 +133,7 @@ private:
     TimeEntryPtr m_currentTimeEntry;
     TaskPtr m_currentTask;
     bool m_waiting;
+    QString m_currentTaskName;
 };
 
 #endif // LOGICCORE_H
