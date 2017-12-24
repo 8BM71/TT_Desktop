@@ -28,5 +28,9 @@
         <file>Components/TimerLine.qml</file>
         <file>Resources/icons/play-button.svg</file>
         <file>Resources/icons/stop.svg</file>
+        <file>locales/en_GB.qm</file>
+        <file>locales/en_GB.ts</file>
+        <file>locales/ru_RU.qm</file>
+        <file>locales/ru_RU.ts</file>
     </qresource>
 </RCC>
