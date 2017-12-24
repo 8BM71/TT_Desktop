@@ -14,17 +14,19 @@ LogicCore::LogicCore(QObject *parent)
     , m_timerId(-1)
     , m_waiting(false)
 {
-    m_currentUser.id = "42cfb602-f544-4b1b-b01d-63cd6a0b644f";
+    m_currentUser = std::make_shared<User>();
     m_workspacesModel = std::make_shared<WorkspacesModel>();
     m_projectModel = std::make_shared<ProjectsModel>();
     m_tasksModel = std::make_shared<TasksModel>();
     m_timeEntriesModel = std::make_shared<TimeEntriesModel>();
 
-//    updateWorkspacesModel();
-//    updateProjectsModel();
-//    updateTasksModel();
-//    updateTimeEntriesModel();
-    m_webService.createUser();
+    updateWorkspacesModel();
+    updateProjectsModel();
+    updateTasksModel();
+    updateTimeEntriesModel();
+    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
+        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
+    });
 }
 
 LogicCore::~LogicCore()
@@ -199,10 +201,10 @@ void LogicCore::setProjectAsDefault()
 
 void LogicCore::createNewWorkspace(const QString &name)
 {
-    m_webService.createWorkspace(name, m_currentUser.id, [this, name](bool success, QString id){
+    m_webService.createWorkspace(name, m_currentUser->id, [this, name](bool success, QString id){
         if(success)
         {
-            m_workspacesModel->addItem(id, name, m_currentUser.id);
+            m_workspacesModel->addItem(id, name, m_currentUser->id);
         }
     });
 }
@@ -229,14 +231,14 @@ void LogicCore::setWorkspaceAsDefault()
 
 void LogicCore::updateWorkspacesModel()
 {
-    m_webService.getAllWorkspaces(m_currentUser.id, m_workspacesModel, [](bool succes, QString info){
+    m_webService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update workspaces success: %0, info: %1").arg(succes).arg(info);
     });
 }
 
 void LogicCore::updateProjectsModel()
 {
-    m_webService.getAllProjects(m_currentUser.id, m_projectModel, [this](bool succes, QString info){
+    m_webService.getAllProjects(m_currentUser->id, m_projectModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update projects success: %0, info: %1").arg(succes).arg(info);
         emit this->projectsModelChanged();
     });
@@ -244,14 +246,14 @@ void LogicCore::updateProjectsModel()
 
 void LogicCore::updateTasksModel()
 {
-    m_webService.getAllTasks(m_currentUser.id, m_tasksModel, [](bool succes, QString info){
+    m_webService.getAllTasks(m_currentUser->id, m_tasksModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update tasks success: %0, info: %1").arg(succes).arg(info);
     });
 }
 
 void LogicCore::updateTimeEntriesModel()
 {
-    m_webService.getAllTimeEntries(m_currentUser.id, m_timeEntriesModel, [](bool succes, QString info){
+    m_webService.getAllTimeEntries(m_currentUser->id, m_timeEntriesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update time entries success: %0, info: %1").arg(succes).arg(info);
     });
 }
