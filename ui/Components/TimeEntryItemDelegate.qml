@@ -170,10 +170,10 @@ Item {
             id: contextMenuItem
 
             MenuItem {
-                text: qsTr("Edit")
+                text: qsTr("Edit") + translator.trString
             }
             MenuItem {
-                text: qsTr("Remove")
+                text: qsTr("Remove") + translator.trString
             }
             Component.onCompleted: {
                 open()

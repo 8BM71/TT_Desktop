@@ -21,7 +21,7 @@ Dialog {
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
 
-    title: qsTr("Message title")
+    title: qsTr("Message title") + translator.trString
 
     Label {
         id: bodyText
@@ -38,13 +38,13 @@ Dialog {
 
         font.pointSize: 12
 
-        text: qsTr("Message text")
+        text: qsTr("Message text") + translator.trString
     }
 
     footer: DialogButtonBox {
         ToolButton {
             id: cancelButtonItem
-            text: qsTr("Cancel")
+            text: qsTr("Cancel") + translator.trString
             DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
             onClicked: {
@@ -53,7 +53,7 @@ Dialog {
         }
         ToolButton {
             id: actionButtonItem
-            text: qsTr("Action")
+            text: qsTr("Action") + translator.trString
             DialogButtonBox.buttonRole: DialogButtonBox.ActionRole
 
             onClicked: {
@@ -62,7 +62,7 @@ Dialog {
         }
         ToolButton {
             id: okButtonItem
-            text: qsTr("Ok")
+            text: qsTr("Ok") + translator.trString
             DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
             onClicked: {

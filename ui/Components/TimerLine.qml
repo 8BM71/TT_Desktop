@@ -18,7 +18,7 @@ ToolBar {
             verticalCenter: parent.verticalCenter
         }
 
-        placeholderText: qsTr("New task...")
+        placeholderText: qsTr("New task...") + translator.trString
 
         readOnly: core.running
 
@@ -87,7 +87,7 @@ ToolBar {
 
         Material.background: core.waiting ? Material.Yellow : core.running ? Material.Red : Material.Green
 
-        text: core.running ? qsTr("Stop") : qsTr("Start")
+        text: (core.running ? qsTr("Stop") : qsTr("Start")) + translator.trString
         onClicked: {
             if (core.running)
                 core.stopTask()

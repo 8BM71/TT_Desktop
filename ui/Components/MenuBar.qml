@@ -64,7 +64,7 @@ Page {
                 }
                 Label {
                     id: useremail
-                    text: qsTr("email")
+                    text: qsTr("email") + translator.trString
                 }
             }
         }
@@ -137,7 +137,7 @@ Page {
             }
 
             onClicked: {
-                root.state = root.state == "Normal" ? "Hidden" : "Normal"
+                settings.menuState = root.state == "Normal" ? "Hidden" : "Normal"
             }
         }
 
@@ -153,7 +153,7 @@ Page {
         ScrollIndicator.vertical: ScrollIndicator { }
     }
 
-    state: "Normal"
+    state: settings.menuState
 
     states: [
         State {

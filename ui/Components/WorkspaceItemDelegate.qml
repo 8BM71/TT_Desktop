@@ -51,7 +51,7 @@ Item {
         clip: true
         elide: Label.ElideRight
 
-        text: root.totalTime + " " + qsTr("h")
+        text: root.totalTime + " " + qsTr("h") + translator.trString
 
         width: parent.width * 0.2
     }
@@ -118,25 +118,25 @@ Item {
             property string workspaceId: ""
 
             MenuItem {
-                text: qsTr("New")
+                text: qsTr("New") + translator.trString
                 onTriggered: {
                     root.newWorkspace()
                 }
             }
             MenuItem {
-                text: qsTr("Rename")
+                text: qsTr("Rename") + translator.trString
                 onTriggered: {
                     root.rename()
                 }
             }
             MenuItem {
-                text: qsTr("Remove")
+                text: qsTr("Remove") + translator.trString
                 onTriggered: {
                     root.remove()
                 }
             }
             MenuItem {
-                text: qsTr("Set default")
+                text: qsTr("Set default") + translator.trString
                 onTriggered: {
                     root.setDefault()
                 }

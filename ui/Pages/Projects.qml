@@ -91,7 +91,7 @@ Item {
     }
 
     RoundButton {
-        text: qsTr("+")
+        text: qsTr("+") + translator.trString
         width: 70
         height: width
         anchors {
@@ -118,12 +118,12 @@ Item {
             property string projectName: ""
             property string projectId: ""
 
-            title: removeDialogItem.projectName == "" ? qsTr("Remove project ")
+            title: removeDialogItem.projectName == "" ? qsTr("Remove project ") + translator.trString
                                                       : projectName
-            text: qsTr("Do you want to remove only project or all tasks in this projects too?")
+            text: qsTr("Do you want to remove only project or all tasks in this projects too?") + translator.trString
 
-            okButton.text: qsTr("Remove project")
-            actionButton.text: qsTr("Remove all")
+            okButton.text: qsTr("Remove project") + translator.trString
+            actionButton.text: qsTr("Remove all") + translator.trString
 
             onOk: {
                 core.deleteProject(removeDialogItem.projectId)
@@ -157,7 +157,7 @@ Item {
             property string projectName: ""
             property string projectId: ""
 
-            title: qsTr("New project")
+            title: qsTr("New project") + translator.trString
 
             width: 400
             height: 200
@@ -176,7 +176,7 @@ Item {
                     id: createTextField
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.5
-                    placeholderText: qsTr("Enter the name..")
+                    placeholderText: qsTr("Enter the name..") + translator.trString
                 }
 
                 ComboBox {
@@ -196,7 +196,7 @@ Item {
             footer: DialogButtonBox {
                 ToolButton {
                     id: cancelButtonItem
-                    text: qsTr("Cancel")
+                    text: qsTr("Cancel") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
                     onClicked: {
@@ -205,7 +205,7 @@ Item {
                 }
                 ToolButton {
                     id: okButtonItem
-                    text: qsTr("Accept")
+                    text: qsTr("Accept") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
@@ -231,7 +231,7 @@ Item {
             property string projectName: ""
             property string projectId: ""
 
-            title: qsTr("Rename project %1").arg(projectName == "" ? "" : projectName)
+            title: qsTr("Rename project %1").arg(projectName == "" ? "" : projectName) + translator.trString
 
             width: 400
             height: 200
@@ -251,14 +251,14 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.7
 
-                    placeholderText: qsTr("New name...")
+                    placeholderText: qsTr("New name...") + translator.trString
                 }
             }
 
             footer: DialogButtonBox {
                 ToolButton {
                     id: cancelButtonItem
-                    text: qsTr("Cancel")
+                    text: qsTr("Cancel") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
                     onClicked: {
@@ -267,7 +267,7 @@ Item {
                 }
                 ToolButton {
                     id: okButtonItem
-                    text: qsTr("Accept")
+                    text: qsTr("Accept") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {

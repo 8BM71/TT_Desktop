@@ -33,6 +33,9 @@ ApplicationWindow {
 
     Settings {
         id: settingsItem
+
+        onLocaleChanged: translator.locale = settingsItem.locale
+        Component.onCompleted: translator.locale = settingsItem.locale
     }
 
     Navigator {

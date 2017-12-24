@@ -31,7 +31,7 @@ Item {
                 margins: 20 * uiScale.xScale
             }
 
-            text: qsTr("Login")
+            text: qsTr("Login") + translator.trString
 
             onClicked: {
                 root.logined()

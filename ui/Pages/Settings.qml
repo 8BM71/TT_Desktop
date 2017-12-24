@@ -83,6 +83,35 @@ Page {
 
             anchors.horizontalCenter: parent.horizontalCenter
 
+            Row {
+                anchors{
+                    left: parent.left
+                    top: parent.top
+                    right: parent.right
+                }
+
+                height: 50
+                spacing: 10
+
+                Label {
+                    text: qsTr("Language") + translator.trString
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                ComboBox {
+                    id: langCB
+                    anchors.verticalCenter: parent.verticalCenter
+                    model: translator.translationModel
+                    textRole: "locale"
+
+                    onActivated: {
+                        settings.locale = langCB.textAt(index);
+                    }
+
+                    Material.elevation: 0
+                }
+            }
+
             Material.elevation: 1
 
         }

@@ -64,7 +64,7 @@ Item {
     }
 
     RoundButton {
-        text: qsTr("+")
+        text: qsTr("+") + translator.trString
         width: 70
         height: width
         anchors {
@@ -91,12 +91,12 @@ Item {
             property string workspaceName: ""
             property string workspaceId: ""
 
-            title: removeDialogItem.workspaceName == "" ? qsTr("Remove workspace ")
+            title: removeDialogItem.workspaceName == "" ? qsTr("Remove workspace ") + translator.trString
                                                         : workspaceName
-            text: qsTr("Do you want to remove only workspaceName or all projects in this workspaceName too?")
+            text: qsTr("Do you want to remove only workspaceName or all projects in this workspaceName too?") + translator.trString
 
-            okButton.text: qsTr("Remove workspaceName")
-            actionButton.text: qsTr("Remove all")
+            okButton.text: qsTr("Remove workspaceName") + translator.trString
+            actionButton.text: qsTr("Remove all") + translator.trString
 
             onOk: {
                 core.deleteWorkspace(removeDialogItem.workspaceId)
@@ -129,7 +129,7 @@ Item {
             property string workspaceName: ""
             property string workspaceId: ""
 
-            title: qsTr("Rename workspace %1").arg(workspaceName == "" ? "" : workspaceName)
+            title: qsTr("Rename workspace %1").arg(workspaceName == "" ? "" : workspaceName) + translator.trString
 
             width: 400
             height: 200
@@ -149,14 +149,14 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.7
 
-                    placeholderText: qsTr("New name...")
+                    placeholderText: qsTr("New name...") + translator.trString
                 }
             }
 
             footer: DialogButtonBox {
                 ToolButton {
                     id: cancelButtonItem
-                    text: qsTr("Cancel")
+                    text: qsTr("Cancel") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
                     onClicked: {
@@ -165,7 +165,7 @@ Item {
                 }
                 ToolButton {
                     id: okButtonItem
-                    text: qsTr("Accept")
+                    text: qsTr("Accept") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
@@ -189,7 +189,7 @@ Item {
             id: createDialogItem
             visible: true
 
-            title: qsTr("Create workspace ")
+            title: qsTr("Create workspace ") + translator.trString
 
             width: 400
             height: 200
@@ -209,14 +209,14 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.7
 
-                    placeholderText: qsTr("Enter the name...")
+                    placeholderText: qsTr("Enter the name...") + translator.trString
                 }
             }
 
             footer: DialogButtonBox {
                 ToolButton {
                     id: cancelButtonItem
-                    text: qsTr("Cancel")
+                    text: qsTr("Cancel") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
 
                     onClicked: {
@@ -225,7 +225,7 @@ Item {
                 }
                 ToolButton {
                     id: okButtonItem
-                    text: qsTr("Accept")
+                    text: qsTr("Accept") + translator.trString
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
