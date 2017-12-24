@@ -4,13 +4,16 @@
 #include <QString>
 #include <memory>
 
-namespace Enteties {
+namespace Entities {
 
 struct TimeEntry {
     QString id;
     QString duration;
+    qint64 startMSecsSinceEpoch;
     QString startDate;
+    QString startTime;
     QString endDate;
+    QString endTime;
     QString taskId;
 };
 

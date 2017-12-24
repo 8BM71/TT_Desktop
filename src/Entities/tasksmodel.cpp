@@ -1,7 +1,7 @@
 #include "tasksmodel.h"
 #include <QUuid>
 
-namespace Enteties {
+namespace Entities {
 
 TasksModel::TasksModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -78,6 +78,22 @@ TaskPtr TasksModel::getItem(const QString &id)
     return nullptr;
 }
 
+QVariantMap TasksModel::getItemData(const QString &id)
+{
+    auto item = getItem(id);
+    if (item)
+    {
+        QVariantMap itemData;
+        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
+        itemData.insert(roleNames().value(Roles::NameRole), item->name);
+        itemData.insert(roleNames().value(Roles::ProjectRole), item->projectId);
+        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
+
+        return itemData;
+    }
+    return QVariantMap();
+}
+
 void TasksModel::addItem(const QString &id, const QString &projectId, const QString &name, const QString &description)
 {
     auto newItem = std::make_shared<Task>();
@@ -87,9 +103,17 @@ void TasksModel::addItem(const QString &id, const QString &projectId, const QStr
     newItem->projectId = projectId;
     newItem->description = description;
 
+    addItem(newItem);
+}
+
+void TasksModel::addItem(TaskPtr item)
+{
+    if (item == nullptr)
+        return;
     beginInsertRows(QModelIndex(), count(), count());
-    m_items.append(newItem);
+    m_items.append(item);
     endInsertRows();
+    emit countChanged(count());
 }
 
 void TasksModel::removeItem(const QString &id)

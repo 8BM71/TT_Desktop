@@ -1,6 +1,36 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>Navigator.qml</file>
+        <file>Pages/Start.qml</file>
+        <file>Pages/Workspaces.qml</file>
+        <file>Pages/Projects.qml</file>
+        <file>Pages/Tasks.qml</file>
+        <file>Pages/Settings.qml</file>
+        <file>Components/MenuBar.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>Resources/icons/add-circular-outlined-button.svg</file>
+        <file>Resources/icons/cube-of-notes-stack.svg</file>
+        <file>Resources/icons/folder-outline.svg</file>
+        <file>Resources/icons/gear-outlined-symbol.svg</file>
+        <file>Resources/icons/images-square-outlined-interface-button-symbol.svg</file>
+        <file>Resources/icons/timer-timing-tool.svg</file>
+        <file>Resources/icons/clipboard-square-symbol.svg</file>
+        <file>Components/Settings.qml</file>
+        <file>Components/MenuItemDelegate.qml</file>
+        <file>Components/WorkspaceItemDelegate.qml</file>
+        <file>Components/ProjectItemDelegate.qml</file>
+        <file>Resources/icons/double-right-arrows-angles.svg</file>
+        <file>Resources/icons/recycling-bin.svg</file>
+        <file>Components/TimeEntryItemDelegate.qml</file>
+        <file>Components/MessageDialog.qml</file>
+        <file>Pages/TimeStory.qml</file>
+        <file>Components/TimerLine.qml</file>
+        <file>Resources/icons/play-button.svg</file>
+        <file>Resources/icons/stop.svg</file>
+        <file>locales/en_GB.qm</file>
+        <file>locales/en_GB.ts</file>
+        <file>locales/ru_RU.qm</file>
+        <file>locales/ru_RU.ts</file>
     </qresource>
 </RCC>

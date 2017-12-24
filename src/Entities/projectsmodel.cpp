@@ -1,7 +1,7 @@
 #include "projectsmodel.h"
 #include <QUuid>
 
-namespace Enteties {
+namespace Entities {
 
 ProjectsModel::ProjectsModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -85,6 +85,16 @@ ProjectPtr ProjectsModel::getItem(const int index)
     return m_items.at(index);
 }
 
+QVariantMap ProjectsModel::getItemData(const QString &id)
+{
+    return convertItemToMap(getItem(id));
+}
+
+QVariantMap ProjectsModel::getItemData(const int index)
+{
+    return convertItemToMap(getItem(index));
+}
+
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
 {
     auto newItem = std::make_shared<Project>();
@@ -97,6 +107,8 @@ void ProjectsModel::addItem(const QString &id, const QString &name, const QStrin
     beginInsertRows(QModelIndex(), count(), count());
     m_items.append(newItem);
     endInsertRows();
+
+    emit countChanged(count());
 }
 
 void ProjectsModel::removeItem(const QString &id)
@@ -118,6 +130,23 @@ void ProjectsModel::removeItem(const int index)
     endRemoveRows();
 
     emit countChanged(count());
+}
+
+QVariantMap ProjectsModel::convertItemToMap(ProjectPtr item)
+{
+    if (item)
+    {
+        QVariantMap itemData;
+
+        itemData.insert(roleNames().value(Roles::ItemIdRole), item->id);
+        itemData.insert(roleNames().value(Roles::NameRole), item->name);
+        itemData.insert(roleNames().value(Roles::DescriptionRole), item->description);
+        itemData.insert(roleNames().value(Roles::WorkspaceRole), item->workspaceId);
+
+        return itemData;
+
+    }
+    return QVariantMap();
 }
 
 

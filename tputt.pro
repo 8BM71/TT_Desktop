@@ -1,4 +1,3 @@
-QT += quick
 QT += quick core network
 CONFIG += c++11
 
@@ -18,19 +17,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += \
         include \
-        include/Enteties
+        include/Entities
 
 HEADERS += \
         $$files(include/*.h) \
-        $$files(include/Enteties/*.h) \
-    include/logiccore.h
+        $$files(include/Entities/*.h)
 
 SOURCES += \
         $$files(src/*.cpp) \
-        $$files(src/Enteties/*.cpp) \
-    src/logiccore.cpp
+        $$files(src/Entities/*.cpp)
 
 RESOURCES += ui/qml.qrc
+
+TRANSLATIONS += ui/locales/ru_RU.ts \
+                ui/locales/en_GB.ts
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -42,6 +42,4 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-DISTFILES +=
 

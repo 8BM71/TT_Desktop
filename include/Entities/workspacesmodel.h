@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 #include "items.h"
 
-namespace Enteties {
+namespace Entities {
 
 class WorkspacesModel : public QAbstractListModel
 {
@@ -24,11 +24,15 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+public slots:
     int count() const;
     void clearModel();
-    WorkspacePtr getItem(const QString &id);
 
-    WorkspacePtr getItem(const int index);
+    WorkspacePtr getItem(const QString &id) const;
+    WorkspacePtr getItem(const int index) const;
+
+    QVariantMap getItemData(const QString &id) const;
+    QVariantMap get(int ind) const;
 
     void addItem(const QString &id, const QString &name, const QString &ownerId);
     void removeItem(const QString &id);
@@ -40,6 +44,8 @@ signals:
 private:
     QList<WorkspacePtr> m_items;
 };
+
+typedef std::shared_ptr<WorkspacesModel> WorkspacesModelPtr;
 
 }
 

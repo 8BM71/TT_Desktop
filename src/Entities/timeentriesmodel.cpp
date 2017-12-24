@@ -1,7 +1,7 @@
 #include "timeentriesmodel.h"
 #include <QUuid>
 
-namespace Enteties {
+namespace Entities {
 
 TimeEntriesModel::TimeEntriesModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -35,8 +35,12 @@ QVariant TimeEntriesModel::data(const QModelIndex &index, int role) const
         return item->duration;
     case StartDateRole:
         return item->startDate;
+    case StartTimeRole:
+        return item->startTime;
     case EndDateRole:
         return item->endDate;
+    case EndTimeRole:
+        return item->endTime;
     default:
         return QVariant();
     }
@@ -50,6 +54,8 @@ QHash<int, QByteArray> TimeEntriesModel::roleNames() const
     roles.insert(DurationRole, "duration");
     roles.insert(StartDateRole, "startDate");
     roles.insert(EndDateRole, "endDate");
+    roles.insert(StartTimeRole, "startTime");
+    roles.insert(EndTimeRole, "endTime");
 
     return roles;
 }
@@ -81,19 +87,28 @@ TimeEntryPtr TimeEntriesModel::getItem(const QString &id)
     return nullptr;
 }
 
-void TimeEntriesModel::addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &endDate, const QString &duration)
+void TimeEntriesModel::addItem(const QString &id, const QString &taskId, const QString &startDate, const QString &startTime, const QString &duration)
 {
     auto newItem = std::make_shared<TimeEntry>();
     newItem->id = id == "" ? QUuid::createUuid().toString()
                            : id;
     newItem->taskId = taskId;
     newItem->startDate = startDate;
-    newItem->endDate = endDate;
+    newItem->startTime = startTime;
     newItem->duration = duration;
 
+    addItem(newItem);
+}
+
+void TimeEntriesModel::addItem(TimeEntryPtr item)
+{
+    if (item == nullptr)
+        return;
     beginInsertRows(QModelIndex(), count(), count());
-    m_items.append(newItem);
+    m_items.append(item);
     endInsertRows();
+
+    emit countChanged(count());
 }
 
 void TimeEntriesModel::removeItem(const QString &id)

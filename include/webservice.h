@@ -11,6 +11,8 @@
 #include "workspacesmodel.h"
 #include "projectsmodel.h"
 #include "tasksmodel.h"
+#include "timeentriesmodel.h"
+#include <QJsonValue>
 
 struct Response
 {
@@ -26,6 +28,8 @@ typedef std::shared_ptr<Response> ResponsePtr;
 typedef std::function<void (ResponsePtr)> PerformCallback;
 typedef std::function<void (bool, QString)> SuccessCallback;
 
+using namespace Entities;
+
 class WebService : public QObject
 {
     Q_OBJECT
@@ -33,27 +37,31 @@ public:
     explicit WebService(QObject *parent = nullptr);
     ~WebService();
 
-    void getAllWorkspaces(const QString &ownerId, std::shared_ptr<Enteties::WorkspacesModel> workspaceModel, SuccessCallback successCallback);
+    void createUser(const QString &username, const QString &email, UserPtr user, SuccessCallback successCallback);
 
-//    void getWorkspaceById();
+    void getAllWorkspaces(const QString &ownerId, WorkspacesModelPtr workspaceModel, SuccessCallback successCallback);
 
-    void getAllProjects(const QString &ownerId, std::shared_ptr<Enteties::ProjectsModel> projectModel, SuccessCallback successCallback);
+    void getAllProjects(const QString &ownerId, ProjectsModelPtr projectModel, SuccessCallback successCallback);
 
-//    void getProjectById();
+    void getAllTasks(const QString &ownerId, TasksModelPtr taskModel, SuccessCallback successCallback);
 
-    void getAllTasks(const QString &ownerId, std::shared_ptr<Enteties::TasksModel> taskModel, SuccessCallback successCallback);
-
-//    void getTaskById();
-
-//    void getTimeEntries();
+    void getAllTimeEntries(const QString &ownerId, TimeEntriesModelPtr timeModel, SuccessCallback successCallback);
 
     void createWorkspace(const QString &name, const QString &ownerId, SuccessCallback successCallback);
 
+    void deleteWorkspace(const QString &workspaceId, SuccessCallback successCallback);
+
     void createProject(const QString &name, const QString &workspaceId, SuccessCallback successCallback);
 
-    void createTask(const QString &projectId, SuccessCallback successCallback);
+    void deleteProject(const QString &projectId, SuccessCallback successCallback);
 
-//    void createTimeEntry();
+    void createTask(const QString &name, const QString &projectId, TaskPtr task, SuccessCallback successCallback);
+
+    void deleteTask(const QString &taskId, SuccessCallback successCallback);
+
+    void startTask(const QString &taskId, TimeEntryPtr timeEntry, SuccessCallback successCallback);
+
+    void stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback successCallback);
 
     //TODO: authorization
 
@@ -65,7 +73,7 @@ public slots:
 private:
     void getRequest(const QNetworkRequest& request, PerformCallback callback);
 
-    void postRequest(const QString &query, PerformCallback callback);
+    void postRequest(const QString &query, PerformCallback callback, QJsonValue vars = QJsonValue());
 
     void requestFunction(QNetworkReply * reply, PerformCallback callback);
 

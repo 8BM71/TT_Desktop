@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 #include "items.h"
 
-namespace Enteties {
+namespace Entities {
 
 class TasksModel : public QAbstractListModel
 {
@@ -25,11 +25,15 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+public slots:
     int count() const;
     void clearModel();
     TaskPtr getItem(const QString &id);
 
+    QVariantMap getItemData(const QString &id);
+
     void addItem(const QString &id, const QString &projectId, const QString &name, const QString &description = "");
+    void addItem(TaskPtr item);
     void removeItem(const QString &id);
     void removeItem(const int index);
 
@@ -40,6 +44,8 @@ private:
     QList<TaskPtr> m_items;
 
 };
+
+typedef std::shared_ptr<TasksModel> TasksModelPtr;
 
 }
 
