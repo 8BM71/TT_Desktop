@@ -32,5 +32,6 @@
         <file>locales/en_GB.ts</file>
         <file>locales/ru_RU.qm</file>
         <file>locales/ru_RU.ts</file>
+        <file>Resources/icons/stop-button.svg</file>
     </qresource>
 </RCC>

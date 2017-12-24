@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
+import QtGraphicalEffects 1.0
 
 ToolBar {
     id: root
@@ -36,7 +37,7 @@ ToolBar {
             rightMargin: 10
         }
 
-        width: 150
+        width: 200
 
         Material.elevation: 0
 
@@ -64,10 +65,10 @@ ToolBar {
         horizontalAlignment: Label.AlignHCenter
 
         text: core.timerDuration
-        font.pixelSize: 16
+        font.pixelSize: 18
     }
 
-    Button {
+    RoundButton {
         id: runningButton
         anchors {
             verticalCenter: parent.verticalCenter
@@ -75,13 +76,49 @@ ToolBar {
             rightMargin: 10
         }
 
-        width: 80
+        width: 60
+        height: width
 
         Material.elevation: 0
 
-        Material.background: core.waiting ? Material.Yellow : core.running ? Material.Red : Material.Green
+        Material.background: /*core.waiting ? Material.Yellow : */core.running ? Material.Red : Material.Green
 
-        text: (core.running ? qsTr("Stop") : qsTr("Start")) + translator.trString
+        //text: (core.running ? qsTr("Stop") : qsTr("Start")) + translator.trString
+        Image {
+            id: runningButtonIcon
+            anchors.centerIn: parent
+            width: core.running ? parent.width * 0.4 : parent.width * 0.6
+            height: width
+            anchors.horizontalCenterOffset: core.running ? 0 : 3
+            source: core.running ? "qrc:/Resources/icons/stop-button.svg" : "qrc:/Resources/icons/play-button.svg"
+            sourceSize: Qt.size(runningButtonIcon.width, runningButtonIcon.height)
+            visible: false
+        }
+
+        ColorOverlay {
+            anchors.fill: runningButtonIcon
+            source: runningButtonIcon
+            color: "white"
+            antialiasing: true
+        }
+
+        RotationAnimator {
+            id: rotationAnimator
+            target: runningButton
+            from: 0
+            to: 360
+            duration: 500
+            easing.type: Easing.InOutBack
+
+        }
+
+        Connections {
+            target: core
+            onRunningChanged: {
+                rotationAnimator.start()
+            }
+        }
+
         onClicked: {
             if (core.running)
                 core.stopTask()
