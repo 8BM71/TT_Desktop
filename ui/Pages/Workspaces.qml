@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
 
 import "qrc:/Components"
 
@@ -17,6 +18,33 @@ Item {
             bottomMargin: 10
         }
         spacing: 10 /** uiScale.yScale*/
+
+        headerPositioning: ListView.PullBackHeader
+
+        onContentYChanged: {
+            if(contentY < -50) {
+                if(!core.workspacesLoading)
+                    core.updateWorkspacesModel();
+            }
+        }
+
+        header: Item {
+            visible: core.workspacesLoading
+
+            height: visible ? 50 : 0
+            width: parent.width
+
+            BusyIndicator {
+                anchors.centerIn: parent
+                height: 50 * 0.8
+                width: height
+                running: true
+            }
+
+            Behavior on height {
+                NumberAnimation { duration: 250 }
+            }
+        }
 
         delegate: WorkspaceItemDelegate {
             anchors.horizontalCenter: parent.horizontalCenter

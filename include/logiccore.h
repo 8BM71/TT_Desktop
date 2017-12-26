@@ -23,6 +23,10 @@ class LogicCore : public QObject
     Q_PROPERTY(bool waiting READ waiting NOTIFY waitingChanged)
     Q_PROPERTY(QString currentTaskName READ currentTaskName WRITE setCurrentTaskName NOTIFY currentTaskNameChanged)
 
+    Q_PROPERTY(bool workspacesLoading READ workspacesLoading WRITE setWorkspacesLoading NOTIFY workspacesLoadingChanged)
+    Q_PROPERTY(bool projectsLoading READ projectsLoading WRITE setProjectsLoading NOTIFY projectsLoadingChanged)
+    Q_PROPERTY(bool tasksLoading READ tasksLoading WRITE setTasksLoading NOTIFY tasksLoadingChanged)
+
 public:
     explicit LogicCore(QObject *parent = nullptr);
     ~LogicCore();
@@ -43,6 +47,12 @@ public:
 
     QString currentTaskName() const;
 
+    bool workspacesLoading() const;
+
+    bool projectsLoading() const;
+
+    bool tasksLoading() const;
+
 signals:
     void workspacesModelChanged();
 
@@ -59,6 +69,12 @@ signals:
     void waitingChanged(bool waiting);
 
     void currentTaskNameChanged(QString currentTaskName);
+
+    void workspacesLoadingChanged(bool workspacesLoading);
+
+    void projectsLoadingChanged(bool projectsLoading);
+
+    void tasksLoadingChanged(bool tasksLoading);
 
 public slots:
     // Task, time entry methods
@@ -104,11 +120,11 @@ public slots:
     // !Workspace methods
     void setCurrentTaskName(QString currentTaskName);
 
-protected:
-    void timerEvent(QTimerEvent *event);
+    void setWorkspacesLoading(bool workspacesLoading);
 
-private:
-    void updateAll();
+    void setProjectsLoading(bool projectsLoading);
+
+    void setTasksLoading(bool tasksLoading);
 
     void updateWorkspacesModel();
 
@@ -117,6 +133,13 @@ private:
     void updateTasksModel();
 
     void updateTimeEntriesModel();
+
+protected:
+    void timerEvent(QTimerEvent *event);
+
+private:
+    void updateAll();
+
 
     void updateTimerDuration();
 
@@ -134,6 +157,9 @@ private:
     TaskPtr m_currentTask;
     bool m_waiting;
     QString m_currentTaskName;
+    bool m_workspacesLoading;
+    bool m_projectsLoading;
+    bool m_tasksLoading;
 };
 
 #endif // LOGICCORE_H

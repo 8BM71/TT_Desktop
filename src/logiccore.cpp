@@ -13,6 +13,9 @@ LogicCore::LogicCore(QObject *parent)
     , m_running(false)
     , m_timerId(-1)
     , m_waiting(false)
+    , m_workspacesLoading(false)
+    , m_projectsLoading(false)
+    , m_tasksLoading(false)
 {
     m_currentUser = std::make_shared<User>();
     m_workspacesModel = std::make_shared<WorkspacesModel>();
@@ -22,9 +25,9 @@ LogicCore::LogicCore(QObject *parent)
 
     m_currentUser->id = "e093e100-82aa-43a5-ba97-2812c710f716";
     updateAll();
-//    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
-//        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
-//    });
+    //    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
+    //        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
+    //    });
 }
 
 LogicCore::~LogicCore()
@@ -70,6 +73,21 @@ bool LogicCore::waiting() const
 QString LogicCore::currentTaskName() const
 {
     return m_currentTaskName;
+}
+
+bool LogicCore::workspacesLoading() const
+{
+    return m_workspacesLoading;
+}
+
+bool LogicCore::projectsLoading() const
+{
+    return m_projectsLoading;
+}
+
+bool LogicCore::tasksLoading() const
+{
+    return m_tasksLoading;
 }
 
 void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
@@ -248,32 +266,70 @@ void LogicCore::setCurrentTaskName(QString currentTaskName)
     emit currentTaskNameChanged(m_currentTaskName);
 }
 
+void LogicCore::setWorkspacesLoading(bool workspacesLoading)
+{
+    if (m_workspacesLoading == workspacesLoading)
+        return;
+
+    m_workspacesLoading = workspacesLoading;
+    emit workspacesLoadingChanged(m_workspacesLoading);
+}
+
+void LogicCore::setProjectsLoading(bool projectsLoading)
+{
+    if (m_projectsLoading == projectsLoading)
+        return;
+
+    m_projectsLoading = projectsLoading;
+    emit projectsLoadingChanged(m_projectsLoading);
+}
+
+void LogicCore::setTasksLoading(bool tasksLoading)
+{
+    if (m_tasksLoading == tasksLoading)
+        return;
+
+    m_tasksLoading = tasksLoading;
+    emit tasksLoadingChanged(m_tasksLoading);
+}
+
 void LogicCore::updateWorkspacesModel()
 {
-    m_webService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [](bool succes, QString info){
+    setWorkspacesLoading(true);
+    m_webService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update workspaces success: %0, info: %1").arg(succes).arg(info);
+        emit this->workspacesModelChanged();
+        setWorkspacesLoading(false);
     });
 }
 
 void LogicCore::updateProjectsModel()
 {
+    setProjectsLoading(true);
     m_webService.getAllProjects(m_currentUser->id, m_projectModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update projects success: %0, info: %1").arg(succes).arg(info);
         emit this->projectsModelChanged();
+        setProjectsLoading(true);
     });
 }
 
 void LogicCore::updateTasksModel()
 {
-    m_webService.getAllTasks(m_currentUser->id, m_tasksModel, [](bool succes, QString info){
+    setTasksLoading(true);
+    m_webService.getAllTasks(m_currentUser->id, m_tasksModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update tasks success: %0, info: %1").arg(succes).arg(info);
+        emit this->tasksModelChanged();
+        setTasksLoading(false);
     });
 }
 
 void LogicCore::updateTimeEntriesModel()
 {
-    m_webService.getAllTimeEntries(m_currentUser->id, m_timeEntriesModel, [](bool succes, QString info){
+    setTasksLoading(true);
+    m_webService.getAllTimeEntries(m_currentUser->id, m_timeEntriesModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update time entries success: %0, info: %1").arg(succes).arg(info);
+        emit this->timeEntriesModelChanged();
+        setTasksLoading(false);
     });
 }
 
@@ -299,7 +355,18 @@ void LogicCore::timerEvent(QTimerEvent *event)
 
 void LogicCore::updateAll()
 {
-    m_webService.updateAllEntities(m_currentUser->id, m_workspacesModel, m_projectModel, m_tasksModel, m_timeEntriesModel, [](bool succes, QString info){
+    setWorkspacesLoading(true);
+    setProjectsLoading(true);
+    setTasksLoading(true);
+    m_webService.updateAllEntities(m_currentUser->id, m_workspacesModel, m_projectModel, m_tasksModel, m_timeEntriesModel, [this](bool succes, QString info){
+        emit this->workspacesModelChanged();
+        emit this->projectsModelChanged();
+        emit this->tasksModelChanged();
+        emit this->timeEntriesModelChanged();
+
+        setWorkspacesLoading(false);
+        setProjectsLoading(false);
+        setTasksLoading(false);
         qCDebug(logicCore) << QString("Update all entities success: %0, info: %1").arg(succes).arg(info);
     });
 }

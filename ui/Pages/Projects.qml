@@ -44,6 +44,33 @@ Item {
             }
         }
 
+        headerPositioning: ListView.PullBackHeader
+
+        onContentYChanged: {
+            if(contentY < -50) {
+                if(!core.projectsLoading)
+                    core.updateProjectsModel();
+            }
+        }
+
+        header: Item {
+            visible: core.projectsLoading
+
+            height: visible ? 50 : 0
+            width: parent.width
+
+            BusyIndicator {
+                anchors.centerIn: parent
+                height: 50 * 0.8
+                width: height
+                running: true
+            }
+
+            Behavior on height {
+                NumberAnimation { duration: 250 }
+            }
+        }
+
         delegate: ProjectItemDelegate {
             id: projectDelegateItem
             anchors.horizontalCenter: parent.horizontalCenter
