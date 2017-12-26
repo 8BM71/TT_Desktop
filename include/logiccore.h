@@ -92,7 +92,7 @@ public slots:
 
     void deleteTask();
 
-    void deleteTimeEntry();
+    void deleteTimeEntry(const QString &id);
 
     void updateTask();
 

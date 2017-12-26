@@ -14,6 +14,7 @@ Item {
     property var contextMenu: null
 
     signal continueTask()
+    signal remove()
 
     Pane {
         anchors.fill: parent
@@ -174,6 +175,8 @@ Item {
             }
             MenuItem {
                 text: qsTr("Remove") + translator.trString
+                onTriggered: root.remove()
+
             }
             Component.onCompleted: {
                 open()

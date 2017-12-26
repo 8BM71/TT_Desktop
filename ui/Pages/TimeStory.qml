@@ -95,6 +95,9 @@ Item {
             onContinueTask: {
                 core.startExistTask(task.itemId)
             }
+            onRemove: {
+                core.deleteTimeEntry(model.itemId)
+            }
         }
 
         ScrollIndicator.vertical: ScrollIndicator { }

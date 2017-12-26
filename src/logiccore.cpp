@@ -172,9 +172,13 @@ void LogicCore::deleteTask()
     //TODO: implement
 }
 
-void LogicCore::deleteTimeEntry()
+void LogicCore::deleteTimeEntry(const QString &id)
 {
-    //TODO: implement
+    m_timeService.removeTimeEntry(id, [this, id](bool success, QString info){
+        qCDebug(logicCore) << QString("Remove time entry success: %0, info: %1").arg(success).arg(info);
+        if (success)
+            m_timeEntriesModel->removeItem(id);
+    });
 }
 
 void LogicCore::updateTask()
