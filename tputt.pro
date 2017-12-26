@@ -17,15 +17,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += \
         include \
-        include/Entities
+        include/Entities \
+        include/Services
 
 HEADERS += \
         $$files(include/*.h) \
-        $$files(include/Entities/*.h)
+        $$files(include/Entities/*.h) \
+        $$files(include/Services/*.h)
 
 SOURCES += \
         $$files(src/*.cpp) \
-        $$files(src/Entities/*.cpp)
+        $$files(src/Entities/*.cpp) \
+        $$files(src/Services/*.cpp)
 
 RESOURCES += ui/qml.qrc
 

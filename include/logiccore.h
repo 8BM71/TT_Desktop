@@ -2,12 +2,18 @@
 #define LOGICCORE_H
 
 #include <QObject>
-#include "webservice.h"
+
 #include "items.h"
 #include "workspacesmodel.h"
 #include "projectsmodel.h"
 #include "tasksmodel.h"
 #include "timeentriesmodel.h"
+
+#include "appwebservice.h"
+#include "workspacewebservice.h"
+#include "projectwebservice.h"
+#include "taskwebservice.h"
+#include "timeentrywebservice.h"
 
 using namespace Entities;
 
@@ -144,7 +150,11 @@ private:
     void updateTimerDuration();
 
 private:
-    WebService m_webService;
+    AppWebService m_appService;
+    WorkspaceWebService m_wsService;
+    ProjectWebService m_projService;
+    TaskWebService m_taskService;
+    TimeEntryWebService m_timeService;
     UserPtr m_currentUser;
     WorkspacesModelPtr m_workspacesModel;
     ProjectsModelPtr m_projectModel;
