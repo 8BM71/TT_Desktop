@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QUrl>
+#include <QOAuthHttpServerReplyHandler>
 
 const QUrl authUri("https://accounts.google.com/o/oauth2/auth");
 const QUrl tokenUri("https://accounts.google.com/o/oauth2/token");

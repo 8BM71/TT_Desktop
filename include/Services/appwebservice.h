@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtNetworkAuth>
+#include <QOAuth2AuthorizationCodeFlow>
 #include "httpsinglton.h"
 
 #include "workspacesmodel.h"
