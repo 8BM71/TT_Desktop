@@ -5,9 +5,30 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QUrl>
+
+const QUrl authUri("https://accounts.google.com/o/oauth2/auth");
+const QUrl tokenUri("https://accounts.google.com/o/oauth2/token");
+const QUrl redirectUri("http://localhost:8080/cb");
+const QString clientId("762893916605-obrrt1mrp48qa8ev8npqbn83kl8vadq9.apps.googleusercontent.com");
+const QString clientSecret("kjhMu7Oet8QA7OpZqrL2MGUt");
 
 AppWebService::AppWebService(QObject *parent) : QObject(parent)
 {
+    auto replyHandler = new QOAuthHttpServerReplyHandler(static_cast<quint16>(redirectUri.port()), this);
+    m_google.setReplyHandler(replyHandler);
+    m_google.setAuthorizationUrl(authUri);
+    m_google.setClientIdentifier(clientId);
+    m_google.setAccessTokenUrl(tokenUri);
+    m_google.setClientIdentifierSharedKey(clientSecret);
+    m_google.setScope("email profile");
+
+    connect(&m_google, &QOAuth2AuthorizationCodeFlow::statusChanged, [=](QAbstractOAuth::Status status){
+        if (status == QAbstractOAuth::Status::Granted)
+            qDebug() << "Granted token: " << m_google.token();
+    });
+
+    connect(&m_google, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
 
 }
 
@@ -180,4 +201,9 @@ void AppWebService::updateAllEntities(const QString &ownerId, WorkspacesModelPtr
                 successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
+}
+
+void AppWebService::authorizeWithGoogle()
+{
+    m_google.grant();
 }

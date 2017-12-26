@@ -90,6 +90,11 @@ bool LogicCore::tasksLoading() const
     return m_tasksLoading;
 }
 
+void LogicCore::siginWithGoogle()
+{
+    m_appService.authorizeWithGoogle();
+}
+
 void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 {
     if (m_waiting)

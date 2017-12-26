@@ -28,8 +28,7 @@ class HttpSinglton : public QObject
     Q_OBJECT
     explicit HttpSinglton(QObject *parent = nullptr);
     ~HttpSinglton();
-    HttpSinglton(const HttpSinglton&) = delete;
-    HttpSinglton& operator=( HttpSinglton& ) = delete;
+    Q_DISABLE_COPY(HttpSinglton)
 public:
     static HttpSinglton* instance();
 

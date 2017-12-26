@@ -117,6 +117,13 @@ ApplicationWindow {
         }
     }
 
+    Shortcut {
+        sequence: "Ctrl+L"
+        onActivated: {
+            core.siginWithGoogle()
+        }
+    }
+
     Component.onCompleted: {
         if(!logined) {
             if(startPage)

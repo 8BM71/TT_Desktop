@@ -2,6 +2,7 @@
 #define APPWEBSERVICE_H
 
 #include <QObject>
+#include <QtNetworkAuth>
 #include "httpsinglton.h"
 
 #include "workspacesmodel.h"
@@ -25,6 +26,10 @@ public:
                            TasksModelPtr taskModel,
                            TimeEntriesModelPtr timeModel,
                            SuccessCallback successCallback);
+
+    void authorizeWithGoogle();
+private:
+    QOAuth2AuthorizationCodeFlow m_google;
 };
 
 #endif // APPWEBSERVICE_H

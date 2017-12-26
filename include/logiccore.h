@@ -83,6 +83,9 @@ signals:
     void tasksLoadingChanged(bool tasksLoading);
 
 public slots:
+
+    void siginWithGoogle();
+
     // Task, time entry methods
     void startNewTask(const QString &taskName, const QString &projectId);
 
