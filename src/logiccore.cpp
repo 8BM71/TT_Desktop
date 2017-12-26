@@ -80,7 +80,7 @@ void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
     emit this->waitingChanged(m_waiting);
     m_currentTask = std::make_shared<Task>();
 
-    m_webService.createTask(taskName, projectId, m_currentTask, [this](bool success, QString info){
+    m_taskService.createTask(taskName, projectId, m_currentTask, [this](bool success, QString info){
         qCDebug(logicCore) << QString("Create task success: %0, info: %1").arg(success).arg(info);
         if (success)
         {
@@ -96,7 +96,7 @@ void LogicCore::stopTask()
         return;
     m_waiting = true;
     emit this->waitingChanged(m_waiting);
-    m_webService.stopTimeEntry(m_currentTimeEntry, [this](bool success, QString info){
+    m_timeService.stopTimeEntry(m_currentTimeEntry, [this](bool success, QString info){
         qCDebug(logicCore) << QString("Stop task success: %0, info: %1").arg(success).arg(info);
         if (success)
         {
@@ -125,7 +125,7 @@ void LogicCore::startExistTask(const QString &taskId)
 
     m_currentTimeEntry = std::make_shared<TimeEntry>();
 
-    m_webService.startTask(taskId, m_currentTimeEntry, [this](bool success, QString info){
+    m_timeService.startTask(taskId, m_currentTimeEntry, [this](bool success, QString info){
         qCDebug(logicCore) << QString("Start task success: %0, info: %1").arg(success).arg(info);
         if (success)
         {
@@ -176,7 +176,7 @@ void LogicCore::setProjectForTask()
 
 void LogicCore::createNewProject(const QString &name, const QString &workspaceId)
 {
-    m_webService.createProject(name, workspaceId, [this, name, workspaceId](bool success, QString id){
+    m_projService.createProject(name, workspaceId, [this, name, workspaceId](bool success, QString id){
         if(success)
         {
             m_projectModel->addItem(id, name, workspaceId);
@@ -196,7 +196,7 @@ void LogicCore::updateProject()
 
 void LogicCore::deleteProject(const QString &projectId)
 {
-    m_webService.deleteProject(projectId, [this, projectId](bool success, QString info){
+    m_projService.removeProject(projectId, [this, projectId](bool success, QString info){
         if(success)
             m_projectModel->removeItem(projectId);
         else
@@ -211,7 +211,11 @@ void LogicCore::setProjectAsDefault()
 
 void LogicCore::createNewWorkspace(const QString &name)
 {
-    m_webService.createWorkspace(name, m_currentUser->id, [this, name](bool success, QString id){
+    QVariantMap params {
+        {"name", name}
+    };
+
+    m_wsService.createWorkspace(m_currentUser->id, params, [this, name](bool success, QString id){
         if(success)
         {
             m_workspacesModel->addItem(id, name, m_currentUser->id);
@@ -226,7 +230,7 @@ void LogicCore::updateWorkspace()
 
 void LogicCore::deleteWorkspace(const QString &workspaceId)
 {
-    m_webService.deleteWorkspace(workspaceId, [this, workspaceId](bool success, QString info){
+    m_wsService.removeWorkspace(workspaceId, [this, workspaceId](bool success, QString info){
         if(success)
             m_workspacesModel->removeItem(workspaceId);
         else
@@ -250,14 +254,14 @@ void LogicCore::setCurrentTaskName(QString currentTaskName)
 
 void LogicCore::updateWorkspacesModel()
 {
-    m_webService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [](bool succes, QString info){
+    m_wsService.getAllWorkspaces(m_currentUser->id, m_workspacesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update workspaces success: %0, info: %1").arg(succes).arg(info);
     });
 }
 
 void LogicCore::updateProjectsModel()
 {
-    m_webService.getAllProjects(m_currentUser->id, m_projectModel, [this](bool succes, QString info){
+    m_projService.getAllProjects(m_currentUser->id, m_projectModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update projects success: %0, info: %1").arg(succes).arg(info);
         emit this->projectsModelChanged();
     });
@@ -265,14 +269,14 @@ void LogicCore::updateProjectsModel()
 
 void LogicCore::updateTasksModel()
 {
-    m_webService.getAllTasks(m_currentUser->id, m_tasksModel, [](bool succes, QString info){
+    m_taskService.getAllTasks(m_currentUser->id, m_tasksModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update tasks success: %0, info: %1").arg(succes).arg(info);
     });
 }
 
 void LogicCore::updateTimeEntriesModel()
 {
-    m_webService.getAllTimeEntries(m_currentUser->id, m_timeEntriesModel, [](bool succes, QString info){
+    m_timeService.getAllTimeEntries(m_currentUser->id, m_timeEntriesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update time entries success: %0, info: %1").arg(succes).arg(info);
     });
 }
@@ -299,7 +303,7 @@ void LogicCore::timerEvent(QTimerEvent *event)
 
 void LogicCore::updateAll()
 {
-    m_webService.updateAllEntities(m_currentUser->id, m_workspacesModel, m_projectModel, m_tasksModel, m_timeEntriesModel, [](bool succes, QString info){
+    m_appService.updateAllEntities(m_currentUser->id, m_workspacesModel, m_projectModel, m_tasksModel, m_timeEntriesModel, [](bool succes, QString info){
         qCDebug(logicCore) << QString("Update all entities success: %0, info: %1").arg(succes).arg(info);
     });
 }
