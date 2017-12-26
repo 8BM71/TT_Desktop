@@ -99,15 +99,18 @@ void WorkspaceWebService::createWorkspace(const QString &ownerId, const QVariant
 
 void WorkspaceWebService::updateWorkspace(const QString &id, const QVariantMap &params, SuccessCallback successCallback)
 {
-
-}
-
-void WorkspaceWebService::removeWorkspace(const QString &id, SuccessCallback successCallback)
-{
-    QString query = QString("mutation M {"
-                            "removeWorkspace(id: \"%1\")"
-                            "}").arg(id);
-
+    QString query = QString("mutation M ($id: String!, $ws: WorkspaceInput!){"
+                                "updateWorkspace(id: $id, workspace: $ws)"
+                            "}");
+    QJsonObject wsParams{
+        {"id", id},
+        {"ws",
+            QJsonObject {
+                {"name", params["name"].toString()},
+                {"description", params["description"].toString()}
+            }
+        }
+    };
     HttpSinglton::instance()->postRequest(query, [this, successCallback](ResponsePtr resp) {
         if (resp->isError)
         {
@@ -123,7 +126,7 @@ void WorkspaceWebService::removeWorkspace(const QString &id, SuccessCallback suc
                         .toObject(QJsonObject());
                 if (!dataObject.isEmpty())
                 {
-                    if(dataObject.value("deleteWorkspace").toBool(false))
+                    if(dataObject.value("updateWorkspace").toBool(false))
                         successCallback(true, "Ok");
                     else
                     {
@@ -151,5 +154,61 @@ void WorkspaceWebService::removeWorkspace(const QString &id, SuccessCallback suc
             else
                 successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
-    });
+    }, wsParams);
+}
+
+void WorkspaceWebService::removeWorkspace(const QString &id, SuccessCallback successCallback)
+{
+    QString query = QString("mutation M ($id: String!) {"
+                                "removeWorkspace(id: $id)"
+                            "}");
+
+    QJsonObject wsParams{
+        {"id", id}
+    };
+
+    HttpSinglton::instance()->postRequest(query, [this, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    if(dataObject.value("removeWorkspace").toBool(false))
+                        successCallback(true, "Ok");
+                    else
+                    {
+                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                                .object()
+                                .value("errors")
+                                .toArray(QJsonArray());
+
+                        if(!errorArray.isEmpty())
+                        {
+                            QJsonObject errorObject = errorArray[0].toObject();
+                            QString message = errorObject.value("message").toString("Some error");
+                            successCallback(false, message);
+                        }
+                        else
+                        {
+                            successCallback(false, "Some error");
+                        }
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    }, wsParams);
 }

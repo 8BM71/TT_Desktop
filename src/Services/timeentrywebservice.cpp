@@ -239,10 +239,117 @@ void TimeEntryWebService::stopTimeEntry(TimeEntryPtr timeEntry, SuccessCallback 
 
 void TimeEntryWebService::updateTimeEntry(const QString &id, const QVariantMap &params, SuccessCallback successCallback)
 {
+    QString query = QString("mutation M ($id: String!, $te: TimeEntryInput!){"
+                                "updateTimeEntry(id: $id, timeEntry: $te)"
+                            "}");
+    QJsonObject teParams{
+        {"id", id},
+        {"te",
+            QJsonObject {
+                {"duration", params["duration"].toString()},
+                {"startDate", params["startDate"].toString()},
+                {"endDate", params["endDate"].toString()}
+            }
+        }
+    };
+    HttpSinglton::instance()->postRequest(query, [this, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    if(dataObject.value("updateTimeEntry").toBool(false))
+                        successCallback(true, "Ok");
+                    else
+                    {
+                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                                .object()
+                                .value("errors")
+                                .toArray(QJsonArray());
 
+                        if(!errorArray.isEmpty())
+                        {
+                            QJsonObject errorObject = errorArray[0].toObject();
+                            QString message = errorObject.value("message").toString("Some error");
+                            successCallback(false, message);
+                        }
+                        else
+                        {
+                            successCallback(false, "Some error");
+                        }
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    }, teParams);
 }
 
 void TimeEntryWebService::removeTimeEntry(const QString &id, SuccessCallback successCallback)
 {
+    QString query = QString("mutation M ($id: String!) {"
+                                "removeTimeEntry(id: $id)"
+                            "}");
 
+    QJsonObject teParams{
+        {"id", id}
+    };
+
+    HttpSinglton::instance()->postRequest(query, [this, successCallback](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            successCallback(false, resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    if(dataObject.value("removeTimeEntry").toBool(false))
+                        successCallback(true, "Ok");
+                    else
+                    {
+                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                                .object()
+                                .value("errors")
+                                .toArray(QJsonArray());
+
+                        if(!errorArray.isEmpty())
+                        {
+                            QJsonObject errorObject = errorArray[0].toObject();
+                            QString message = errorObject.value("message").toString("Some error");
+                            successCallback(false, message);
+                        }
+                        else
+                        {
+                            successCallback(false, "Some error");
+                        }
+                    }
+                }
+                else
+                    successCallback(false, "Incorrect response from server");
+
+            }
+            else
+                successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    }, teParams);
 }
