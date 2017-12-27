@@ -228,9 +228,20 @@ void LogicCore::moveProjectToWorkspace()
     //TODO: implement
 }
 
-void LogicCore::updateProject()
+void LogicCore::updateProject(const QString &id, const QString &name)
 {
-    //TODO: implement
+    QVariantMap params;
+    params.insert(m_projectModel->roleNames().value(ProjectsModel::Roles::ItemIdRole), id);
+    params.insert(m_projectModel->roleNames().value(ProjectsModel::Roles::NameRole), name);
+
+    m_projService.updateProject(id, params,[this, params](bool success, QString info){
+        if(success) {
+            int ind = m_projectModel->getIndex(params["itemId"].toString());
+
+            QModelIndex index = m_projectModel->index(ind);
+            m_projectModel->setData(index,params["name"],ProjectsModel::Roles::NameRole);
+        }
+    });
 }
 
 void LogicCore::deleteProject(const QString &projectId)

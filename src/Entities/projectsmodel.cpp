@@ -40,6 +40,20 @@ QVariant ProjectsModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool ProjectsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    auto item = m_items[index.row()];
+    switch (role) {
+        case NameRole:{
+            item->name = value.toString();
+            emit dataChanged(index, index, QVector<int>() << NameRole);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 QHash<int, QByteArray> ProjectsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
