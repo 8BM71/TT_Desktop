@@ -1,6 +1,7 @@
 #include "timeentriesmodel.h"
 #include <QUuid>
 #include <QDebug>
+#include <algorithm>
 
 namespace Entities {
 
@@ -133,4 +134,13 @@ void TimeEntriesModel::removeItem(const int index)
     emit countChanged(count());
 }
 
+}
+
+void Entities::TimeEntriesModel::sort(int column, Qt::SortOrder order)
+{
+    Q_UNUSED(column)
+    std::sort(m_items.begin(), m_items.end(), [&order](TimeEntryPtr a, TimeEntryPtr b){
+        return order == Qt::AscendingOrder ? a->startMSecsSinceEpoch < b->startMSecsSinceEpoch
+                                           : a->startMSecsSinceEpoch > b->startMSecsSinceEpoch;
+    });
 }

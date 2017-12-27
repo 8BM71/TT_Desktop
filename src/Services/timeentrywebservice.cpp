@@ -97,6 +97,7 @@ void TimeEntryWebService::getAllTimeEntries(const QString &ownerId, TimeEntriesM
                                                     timeEntryItem->endDate = endDateTime.date().toString("dd.MM.yy");
                                                     timeEntryItem->endTime = endDateTime.time().toString("hh:mm:ss");
                                                     timeEntryItem->taskId = taskId;
+                                                    timeEntryItem->startMSecsSinceEpoch = startDateValue;
 
                                                     timeModel->addItem(timeEntryItem);
 

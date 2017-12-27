@@ -28,6 +28,7 @@ public:
     virtual int rowCount(const QModelIndex &parent) const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
+    void sort(int column, Qt::SortOrder order = Qt::DescendingOrder) override;
 
     int count() const;
     void clearModel();

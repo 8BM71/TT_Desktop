@@ -28,6 +28,7 @@ AppWebService::AppWebService(QObject *parent) : QObject(parent)
     connect(&m_google, &QOAuth2AuthorizationCodeFlow::statusChanged, [=](QAbstractOAuth::Status status){
         if (status == QAbstractOAuth::Status::Granted)
             qDebug() << "Granted token: " << m_google.token();
+
     });
 
     connect(&m_google, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
