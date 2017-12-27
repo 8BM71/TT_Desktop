@@ -7,7 +7,7 @@ Item {
     id: root
 
     property alias name: nameLabel.text
-    property string totalProjects
+    property string totalProjects: ""
 
     signal remove
     signal newWorkspace
@@ -39,6 +39,7 @@ Item {
 
     Label {
         id: totalProjectsLabel
+        visible: root.totalTime != "" && root.totalTime != undefined
 
         anchors {
             top: parent.top
@@ -51,7 +52,7 @@ Item {
         clip: true
         elide: Label.ElideRight
 
-        text: root.totalTime + " " + qsTr("h") + translator.trString
+        text: qsTr("%1 h").arg(root.totalTime) + translator.trString
 
         width: parent.width * 0.2
     }

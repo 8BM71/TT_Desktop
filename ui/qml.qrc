@@ -33,5 +33,6 @@
         <file>locales/ru_RU.qm</file>
         <file>locales/ru_RU.ts</file>
         <file>Resources/icons/stop-button.svg</file>
+        <file>Components/TaskItemDelegate.qml</file>
     </qresource>
 </RCC>

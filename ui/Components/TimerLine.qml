@@ -9,6 +9,19 @@ ToolBar {
     Material.elevation: 1
     Material.background: Material.Grey
 
+    Connections {
+        target: core
+        onProjectsModelChanged: {
+            if (projectsComboBox.currentIndex == -1 && projectsComboBox.model.count > 0)
+                projectsComboBox.currentIndex = 0
+        }
+        onCurrentTaskChanged: {
+            var projId = currentTask.project
+            projectsComboBox.currentIndex = projId != undefined ? core.projectsModel.getIndex(projId) : 0
+            newTaskName.text = currentTask.name != undefined ? currentTask.name : ""
+        }
+    }
+
     TextField {
         id: newTaskName
         anchors {
@@ -20,8 +33,6 @@ ToolBar {
         }
 
         placeholderText: qsTr("New task...") + translator.trString
-
-        text: core.currentTaskName
 
         readOnly: core.running
 
@@ -39,19 +50,11 @@ ToolBar {
 
         width: 200
 
-        Material.elevation: 0
-
-
+        //enabled: !core.running
         textRole: "name"
         model: core.projectsModel
 
-        Connections {
-            target: core
-            onProjectsModelChanged: {
-                if (projectsComboBox.currentIndex == -1 && projectsComboBox.model.count > 0)
-                    projectsComboBox.currentIndex = 0
-            }
-        }
+        Material.elevation: 0
     }
 
     Label {

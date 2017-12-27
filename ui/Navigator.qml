@@ -75,10 +75,7 @@ Item {
     Component {
         id: tasksPageComponent
         Tasks {
-            Label {
-                anchors.centerIn: parent
-                text: parent.objectName
-            }
+            model: core.tasksModel
         }
     }
     Component {

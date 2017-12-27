@@ -41,7 +41,7 @@ Item {
             verticalCenter: parent.verticalCenter
             rightMargin: 10
         }
-        visible: mouseArea.hovered
+        visible: mouseArea.hovered && false //TODO: implement
         width: 40
         height: 40
         text: "5"

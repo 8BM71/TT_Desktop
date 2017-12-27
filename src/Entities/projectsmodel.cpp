@@ -95,6 +95,16 @@ QVariantMap ProjectsModel::getItemData(const int index)
     return convertItemToMap(getItem(index));
 }
 
+int ProjectsModel::getIndex(const QString &id)
+{
+    for(int i = 0; i < m_items.size(); i++)
+    {
+        if(m_items[i]->id == id)
+            return i;
+    }
+    return -1;
+}
+
 void ProjectsModel::addItem(const QString &id, const QString &name, const QString &workscpaceId)
 {
     auto newItem = std::make_shared<Project>();

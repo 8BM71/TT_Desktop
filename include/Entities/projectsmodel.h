@@ -34,6 +34,7 @@ public slots:
 
     QVariantMap getItemData(const QString &id);
     QVariantMap getItemData(const int index);
+    int getIndex(const QString &id);
 
     void addItem(const QString &id, const QString &name, const QString &workscpaceId);
     void removeItem(const QString &id);

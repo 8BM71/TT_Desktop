@@ -26,12 +26,11 @@ class LogicCore : public QObject
     Q_PROPERTY(TimeEntriesModel* timeEntriesModel READ timeEntriesModel NOTIFY timeEntriesModelChanged)
     Q_PROPERTY(QString timerDuration READ timerDuration NOTIFY timerDurationChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
-    Q_PROPERTY(bool waiting READ waiting NOTIFY waitingChanged)
-    Q_PROPERTY(QString currentTaskName READ currentTaskName WRITE setCurrentTaskName NOTIFY currentTaskNameChanged)
+    Q_PROPERTY(QVariantMap currentTask READ currentTask NOTIFY currentTaskChanged)
 
-    Q_PROPERTY(bool workspacesLoading READ workspacesLoading WRITE setWorkspacesLoading NOTIFY workspacesLoadingChanged)
-    Q_PROPERTY(bool projectsLoading READ projectsLoading WRITE setProjectsLoading NOTIFY projectsLoadingChanged)
-    Q_PROPERTY(bool tasksLoading READ tasksLoading WRITE setTasksLoading NOTIFY tasksLoadingChanged)
+    Q_PROPERTY(bool workspacesLoading READ workspacesLoading NOTIFY workspacesLoadingChanged)
+    Q_PROPERTY(bool projectsLoading READ projectsLoading NOTIFY projectsLoadingChanged)
+    Q_PROPERTY(bool tasksLoading READ tasksLoading NOTIFY tasksLoadingChanged)
 
 public:
     explicit LogicCore(QObject *parent = nullptr);
@@ -49,15 +48,13 @@ public:
 
     bool running() const;
 
-    bool waiting() const;
-
-    QString currentTaskName() const;
-
     bool workspacesLoading() const;
 
     bool projectsLoading() const;
 
     bool tasksLoading() const;
+
+    QVariantMap currentTask() const;
 
 signals:
     void workspacesModelChanged();
@@ -72,15 +69,13 @@ signals:
 
     void runningChanged(bool running);
 
-    void waitingChanged(bool waiting);
-
-    void currentTaskNameChanged(QString currentTaskName);
-
     void workspacesLoadingChanged(bool workspacesLoading);
 
     void projectsLoadingChanged(bool projectsLoading);
 
     void tasksLoadingChanged(bool tasksLoading);
+
+    void currentTaskChanged(QVariantMap currentTask);
 
 public slots:
 
@@ -93,7 +88,7 @@ public slots:
 
     void startExistTask(const QString &taskId);
 
-    void deleteTask();
+    void deleteTask(const QString &taskId);
 
     void deleteTimeEntry(const QString &id);
 
@@ -127,7 +122,6 @@ public slots:
 
     void setWorkspaceAsDefault();
     // !Workspace methods
-    void setCurrentTaskName(QString currentTaskName);
 
     void setWorkspacesLoading(bool workspacesLoading);
 
@@ -168,8 +162,6 @@ private:
     int m_timerId;
     TimeEntryPtr m_currentTimeEntry;
     TaskPtr m_currentTask;
-    bool m_waiting;
-    QString m_currentTaskName;
     bool m_workspacesLoading;
     bool m_projectsLoading;
     bool m_tasksLoading;

@@ -10,7 +10,7 @@ Item {
     property string totalTime: ""
 
     signal remove
-    signal newProject
+    signal start
     signal rename
     signal setDefault
 
@@ -70,9 +70,7 @@ Item {
             contextMenu = contextMenuComponent.createObject(root,
                                                             {
                                                                 "x": mouseX,
-                                                                "y": mouseY,
-                                                                "projectName": model.name,
-                                                                "projectId": model.itemId
+                                                                "y": mouseY
                                                             })
         }
     }
@@ -117,17 +115,14 @@ Item {
         Menu {
             id: contextMenuItem
 
-            property string projectName: ""
-            property string projectId: ""
-
             MenuItem {
-                text: qsTr("New") + translator.trString
+                text: qsTr("Start") + translator.trString
                 onTriggered: {
-                    root.newProject()
+                    root.start()
                 }
             }
             MenuItem {
-                text: qsTr("Rename") + translator.trString
+                text: qsTr("Edit") + translator.trString
                 onTriggered: {
                     root.rename()
                 }
@@ -136,12 +131,6 @@ Item {
                 text: qsTr("Remove") + translator.trString
                 onTriggered: {
                     root.remove()
-                }
-            }
-            MenuItem {
-                text: qsTr("Set default") + translator.trString
-                onTriggered: {
-                    root.setDefault()
                 }
             }
             Component.onCompleted: {

@@ -88,6 +88,19 @@ Item {
             }
         }
 
+
+        remove: Transition {
+            NumberAnimation { property: "opacity"; to: 0; duration: 400 }
+        }
+
+        addDisplaced: Transition {
+            NumberAnimation { properties: "x,y"; duration: 400 }
+        }
+
+        removeDisplaced: Transition {
+            NumberAnimation { properties: "x,y"; duration: 400 }
+        }
+
         ScrollIndicator.vertical: ScrollIndicator { }
     }
 

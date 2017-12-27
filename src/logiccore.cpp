@@ -12,7 +12,6 @@ LogicCore::LogicCore(QObject *parent)
     , m_timerDuration("00:00:00")
     , m_running(false)
     , m_timerId(-1)
-    , m_waiting(false)
     , m_workspacesLoading(false)
     , m_projectsLoading(false)
     , m_tasksLoading(false)
@@ -65,16 +64,6 @@ bool LogicCore::running() const
     return m_running;
 }
 
-bool LogicCore::waiting() const
-{
-    return m_waiting;
-}
-
-QString LogicCore::currentTaskName() const
-{
-    return m_currentTaskName;
-}
-
 bool LogicCore::workspacesLoading() const
 {
     return m_workspacesLoading;
@@ -90,6 +79,20 @@ bool LogicCore::tasksLoading() const
     return m_tasksLoading;
 }
 
+QVariantMap LogicCore::currentTask() const
+{
+    if(m_currentTask == nullptr)
+        return QVariantMap();
+
+    QVariantMap task;
+    task.insert(m_tasksModel->roleNames().value(TasksModel::Roles::ItemIdRole), m_currentTask->id);
+    task.insert(m_tasksModel->roleNames().value(TasksModel::Roles::NameRole), m_currentTask->name);
+    task.insert(m_tasksModel->roleNames().value(TasksModel::Roles::ProjectRole), m_currentTask->projectId);
+    task.insert(m_tasksModel->roleNames().value(TasksModel::Roles::DescriptionRole), m_currentTask->description);
+
+    return task;
+}
+
 void LogicCore::siginWithGoogle()
 {
     m_appService.authorizeWithGoogle();
@@ -97,10 +100,6 @@ void LogicCore::siginWithGoogle()
 
 void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 {
-    if (m_waiting)
-        return;
-    m_waiting = true;
-    emit this->waitingChanged(m_waiting);
     m_currentTask = std::make_shared<Task>();
 
     m_taskService.createTask(taskName, projectId, m_currentTask, [this](bool success, QString info){
@@ -115,10 +114,6 @@ void LogicCore::startNewTask(const QString &taskName, const QString &projectId)
 
 void LogicCore::stopTask()
 {
-    if (m_waiting)
-        return;
-    m_waiting = true;
-    emit this->waitingChanged(m_waiting);
     m_timeService.stopTimeEntry(m_currentTimeEntry, [this](bool success, QString info){
         qCDebug(logicCore) << QString("Stop task success: %0, info: %1").arg(success).arg(info);
         if (success)
@@ -128,11 +123,9 @@ void LogicCore::stopTask()
                 killTimer(m_timerId);
                 m_timerId = -1;
             }
-            m_waiting = false;
-            emit this->waitingChanged(m_waiting);
             m_running = false;
             emit this->runningChanged(m_running);
-            this->setCurrentTaskName("");
+            emit this->currentTaskChanged(QVariantMap());
             m_timerDuration = "00:00:00";
             emit this->timerDurationChanged(m_timerDuration);
             m_tasksModel->addItem(m_currentTask);
@@ -158,10 +151,8 @@ void LogicCore::startExistTask(const QString &taskId)
                 m_timerId = -1;
             }
 
-            this->setCurrentTaskName(m_currentTask->name);
+            emit this->currentTaskChanged(this->currentTask());
 
-            m_waiting = false;
-            emit this->waitingChanged(m_waiting);
             m_running = true;
             emit this->runningChanged(m_running);
             this->updateTimerDuration();
@@ -172,9 +163,14 @@ void LogicCore::startExistTask(const QString &taskId)
 }
 
 
-void LogicCore::deleteTask()
+void LogicCore::deleteTask(const QString &taskId)
 {
-    //TODO: implement
+    m_taskService.removeTask(taskId, [this, taskId](bool success, QString info){
+        if(success)
+            m_tasksModel->removeItem(taskId);
+        else
+            qCDebug(logicCore) << "Task delete error:" << info;
+    });
 }
 
 void LogicCore::deleteTimeEntry(const QString &id)
@@ -270,15 +266,6 @@ void LogicCore::setWorkspaceAsDefault()
     //TODO: implement
 }
 
-void LogicCore::setCurrentTaskName(QString currentTaskName)
-{
-    if (m_currentTaskName == currentTaskName)
-        return;
-
-    m_currentTaskName = currentTaskName;
-    emit currentTaskNameChanged(m_currentTaskName);
-}
-
 void LogicCore::setWorkspacesLoading(bool workspacesLoading)
 {
     if (m_workspacesLoading == workspacesLoading)
@@ -322,7 +309,7 @@ void LogicCore::updateProjectsModel()
     m_projService.getAllProjects(m_currentUser->id, m_projectModel, [this](bool succes, QString info){
         qCDebug(logicCore) << QString("Update projects success: %0, info: %1").arg(succes).arg(info);
         emit this->projectsModelChanged();
-        setProjectsLoading(true);
+        setProjectsLoading(false);
     });
 }
 
