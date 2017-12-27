@@ -92,15 +92,16 @@ Item {
             }
 
             onRename: {
-                if (editProjectDialog)
-                    editProjectDialog.destroy();
+                if (editDialog)
+                    editDialog.destroy();
 
-                editProjectDialog = editProjectDialogComponent.createObject(root,
-                                                                                {
-                                                                                    "name": model.name,
-                                                                                    "itemId": model.itemId,
-                                                                                    "description": model.description
-                                                                                })
+                editDialog = editDialogComponent.createObject(root,
+                                                              {
+                                                                  "name": model.name,
+                                                                  "itemId": model.itemId,
+                                                                  "description": model.description,
+                                                                  "project": model.project
+                                                              })
             }
 
             onStart: {
@@ -162,6 +163,109 @@ Item {
             }
         }
     }
+
+    property var editDialog: null
+    Component {
+        id: editDialogComponent
+        MessageDialog {
+            id: editDialogItem
+
+            width: 500
+            height: 300
+
+            property string name: ""
+            property string itemId: ""
+            property string description: ""
+            property string project: ""
+
+            title: qsTr("Edit task %1").arg(name) + translator.trString
+            //text: qsTr("Do you want to remove this task with all time entries?") + translator.trString
+            text: ""
+
+            Item {
+                anchors {
+                    fill: parent
+                    topMargin: editDialogItem.header.height
+                    bottomMargin: editDialogItem.footer.height
+                }
+
+                Row {
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        right: parent.right
+                        bottom: descriptionItem.top
+                        bottomMargin: 5
+                    }
+
+                    spacing: 5
+
+                    TextField {
+                        id: createTextField
+                        text: editDialogItem.name
+                        placeholderText: qsTr("Enter the name..") + translator.trString
+                        width: (parent.width  - parent.spacing) * 0.5
+                        selectByMouse: true
+                    }
+
+                    ComboBox {
+                        id: projectsComboBox
+                        width: (parent.width  - parent.spacing) * 0.5
+
+                        textRole: "name"
+                        model: core.projectsModel
+                        currentIndex: core.projectsModel.getIndex(editDialogItem.project)
+                    }
+                }
+
+                Flickable {
+                    id: descriptionItem
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        bottom: parent.bottom
+                        bottomMargin: -10
+                    }
+                    height: parent.height * 0.6
+                    clip: true
+
+                    TextArea.flickable: TextArea {
+                        id: descriptionTextArea
+                        wrapMode: TextArea.WordWrap
+                        selectByMouse: true
+                        selectByKeyboard: true
+
+                        text: editDialogItem.description
+
+                        placeholderText: qsTr("Task description..") + translator.trString
+
+                    }
+                    ScrollIndicator.vertical: ScrollIndicator { }
+                }
+            }
+
+            okButton.text: qsTr("Accept") + translator.trString
+            actionButton.visible: false
+
+            onOk: {
+                core.updateTask(editDialogItem.itemId,
+                                createTextField.text,
+                                core.projectsModel.getItemData(projectsComboBox.currentIndex).itemId,
+                                descriptionTextArea.text)
+            }
+
+            onCancel: {
+
+            }
+
+            onClosed: {
+                editDialog.destroy();
+                editDialog = null;
+            }
+        }
+    }
+
+
 
 
 }

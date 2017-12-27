@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
 
     minimumWidth: 600
-    minimumHeight: 380
+    minimumHeight: 450
     width: 800
     height: 600
 

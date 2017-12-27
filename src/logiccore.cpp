@@ -4,6 +4,7 @@
 #include <QMetaType>
 #include <QTimerEvent>
 #include <QDateTime>
+#include <QModelIndex>
 
 Q_LOGGING_CATEGORY(logicCore, "LogicCore")
 
@@ -182,9 +183,24 @@ void LogicCore::deleteTimeEntry(const QString &id)
     });
 }
 
-void LogicCore::updateTask()
+void LogicCore::updateTask(const QString &taskId, const QString &name, const QString &projectId, const QString &description)
 {
-    //TODO: implement
+    QVariantMap params;
+    params.insert(m_tasksModel->roleNames().value(TasksModel::Roles::ItemIdRole), taskId);
+    params.insert(m_tasksModel->roleNames().value(TasksModel::Roles::NameRole), name);
+    params.insert(m_tasksModel->roleNames().value(TasksModel::Roles::ProjectRole), projectId);
+    params.insert(m_tasksModel->roleNames().value(TasksModel::Roles::DescriptionRole), description);
+
+    m_taskService.updateTask(taskId, params, [this, params](bool success, QString info){
+        if(success) {
+            int ind = m_tasksModel->getIndex(params["itemId"].toString());
+
+            QModelIndex index = m_tasksModel->index(ind);
+            m_tasksModel->setData(index,params["name"],TasksModel::Roles::NameRole);
+            m_tasksModel->setData(index,params["projectId"],TasksModel::Roles::ProjectRole);
+            m_tasksModel->setData(index,params["description"],TasksModel::Roles::DescriptionRole);
+        }
+    });
 }
 
 void LogicCore::updateTimeEntry()

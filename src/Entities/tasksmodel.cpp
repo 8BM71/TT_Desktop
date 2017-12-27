@@ -41,6 +41,30 @@ QVariant TasksModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool TasksModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    auto item = m_items[index.row()];
+    switch (role) {
+        case NameRole:{
+            item->name = value.toString();
+            emit dataChanged(index, index, QVector<int>() << NameRole);
+            return true;
+        }
+        case DescriptionRole:{
+            item->description = value.toString();
+            emit dataChanged(index, index, QVector<int>() << DescriptionRole);
+            return true;
+        }
+        case ProjectRole:{
+            item->projectId = value.toString();
+            emit dataChanged(index, index, QVector<int>() << ProjectRole);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 QHash<int, QByteArray> TasksModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -135,6 +159,16 @@ void TasksModel::removeItem(const int index)
     endRemoveRows();
 
     emit countChanged(count());
+}
+
+int TasksModel::getIndex(const QString &id)
+{
+    for (int i = 0; i < m_items.size(); i++)
+    {
+        if (m_items[i]->id == id)
+            return i;
+    }
+    return -1;
 }
 
 }

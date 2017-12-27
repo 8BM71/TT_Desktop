@@ -32,6 +32,7 @@ ToolBar {
             verticalCenter: parent.verticalCenter
         }
 
+        selectByMouse: true
         placeholderText: qsTr("New task...") + translator.trString
 
         readOnly: core.running

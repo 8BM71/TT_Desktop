@@ -132,7 +132,8 @@ void TaskWebService::updateTask(const QString &id, const QVariantMap &params, Su
         {"task",
             QJsonObject {
                 {"name", params["name"].toString()},
-                {"description", params["description"].toString()}
+                {"description", params["description"].toString()},
+                {"projectId", params["projectId"].toString()}
             }
         }
     };
