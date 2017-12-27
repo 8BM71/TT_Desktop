@@ -116,7 +116,7 @@ public slots:
     // Workspace methods
     void createNewWorkspace(const QString &name);
 
-    void updateWorkspace();
+    void updateWorkspace(const QString &id, const QString &name);
 
     void deleteWorkspace(const QString &workspaceId);
 

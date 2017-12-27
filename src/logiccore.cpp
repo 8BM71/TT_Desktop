@@ -262,9 +262,20 @@ void LogicCore::createNewWorkspace(const QString &name)
     });
 }
 
-void LogicCore::updateWorkspace()
+void LogicCore::updateWorkspace(const QString &id, const QString &name)
 {
-    //TODO: implement
+    QVariantMap params;
+    params.insert(m_workspacesModel->roleNames().value(WorkspacesModel::Roles::NameRole),name);
+    params.insert("description",""); //TODO: implement
+
+    m_wsService.updateWorkspace(id, params, [this, id, params](bool success, QString info){
+        if(success) {
+            int ind = m_workspacesModel->getIndex(id);
+            QModelIndex index = m_workspacesModel->index(ind);
+            m_workspacesModel->setData(index,params["name"],WorkspacesModel::Roles::NameRole);
+            //m_workspacesModel->setData(index,params["description"],WorkspacesModel::Roles::DescriptionRole);
+        }
+    });
 }
 
 void LogicCore::deleteWorkspace(const QString &workspaceId)

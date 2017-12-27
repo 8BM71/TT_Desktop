@@ -39,6 +39,30 @@ QVariant WorkspacesModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool WorkspacesModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    auto item = m_items[index.row()];
+    switch (role) {
+        case NameRole:{
+            item->name = value.toString();
+            emit dataChanged(index, index, QVector<int>() << NameRole);
+            return true;
+        }
+        //case DescriptionRole:{
+        //    item->description = value.toString();
+        //    emit dataChanged(index, index, QVector<int>() << DescriptionRole);
+        //    return true;
+        //}
+        case OwnerRole:{
+            item->ownerId = value.toString();
+            emit dataChanged(index, index, QVector<int>() << OwnerRole);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 QHash<int, QByteArray> WorkspacesModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -150,6 +174,17 @@ void WorkspacesModel::removeItem(const int index)
     endRemoveRows();
 
     emit countChanged(count());
+}
+
+int WorkspacesModel::getIndex(const QString &id)
+{
+    for(int i = 0; i < count(); i++)
+    {
+        if(m_items[i]->id == id)
+            return i;
+    }
+
+    return -1;
 }
 
 }
