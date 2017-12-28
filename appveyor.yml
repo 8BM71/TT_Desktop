@@ -37,12 +37,11 @@ artifacts:
     name: installer
 
 deploy:
-  - provider: Environment
+  - provider: GitHub
     name: production
     tag: $(appveyor_repo_tag_name) 
     release: $(appveyor_project_name)-v$(appveyor_build_version)
     description: 'Auto release on tag $(appveyor_repo_tag_name)' 
-    provider: GitHub
     artifact: installer
     prerelease: true
     draft: true
@@ -51,12 +50,11 @@ deploy:
     on:
       appveyor_repo_tag: true
 
-  - provider: Environment
+  - provider: GitHub
     name: production
     tag: $(appveyor_repo_tag_name) 
     release: $(appveyor_project_name)-v$(appveyor_build_version)
     description: 'Auto release on master' 
-    provider: GitHub
     artifact: installer
     prerelease: true
     draft: true
