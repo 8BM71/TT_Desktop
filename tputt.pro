@@ -28,8 +28,7 @@ HEADERS += \
 SOURCES += \
         $$files(src/*.cpp) \
         $$files(src/Entities/*.cpp) \
-        $$files(src/Services/*.cpp)
-
+        $$files(src/Services/*.cpp) 
 RESOURCES += ui/qml.qrc
 
 TRANSLATIONS += ui/locales/ru_RU.ts \

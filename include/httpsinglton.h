@@ -36,8 +36,8 @@ public:
 
     void postRequest(const QString &query, PerformCallback callback, QJsonValue vars = QJsonValue());
 
+    void requestFunction(QNetworkReply * reply, PerformCallback callback);
 private:
-     void requestFunction(QNetworkReply * reply, PerformCallback callback);
 
 private:
     QNetworkAccessManager m_manager;

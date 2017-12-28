@@ -19,9 +19,21 @@ Item {
         height: 600 * uiScale.yScale
         anchors.centerIn: parent
 
-        Pane {
-            anchors.fill: parent
-            Material.elevation: 6
+//        Pane {
+//            anchors.fill: parent
+//            Material.elevation: 6
+//        }
+
+        Button {
+            anchors {
+                centerIn: parent
+            }
+
+            text: qsTr("Sign In Google") + translator.trString
+
+            onClicked: {
+                core.siginWithGoogle()
+            }
         }
 
         Button {

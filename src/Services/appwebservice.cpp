@@ -13,11 +13,12 @@ const QUrl authUri("https://accounts.google.com/o/oauth2/auth");
 const QUrl tokenUri("https://accounts.google.com/o/oauth2/token");
 const QUrl redirectUri("http://localhost:8080/cb");
 const QString clientId("762893916605-obrrt1mrp48qa8ev8npqbn83kl8vadq9.apps.googleusercontent.com");
-const QString clientSecret("kjhMu7Oet8QA7OpZqrL2MGUt");
+const QString clientSecret("4K4JqGv0ZJa0hdakuJBArn5K");
 
 AppWebService::AppWebService(QObject *parent) : QObject(parent)
 {
     auto replyHandler = new QOAuthHttpServerReplyHandler(static_cast<quint16>(redirectUri.port()), this);
+    replyHandler->setCallbackPath("cb");
     m_google.setReplyHandler(replyHandler);
     m_google.setAuthorizationUrl(authUri);
     m_google.setClientIdentifier(clientId);
@@ -28,6 +29,10 @@ AppWebService::AppWebService(QObject *parent) : QObject(parent)
     connect(&m_google, &QOAuth2AuthorizationCodeFlow::statusChanged, [=](QAbstractOAuth::Status status){
         if (status == QAbstractOAuth::Status::Granted)
             qDebug() << "Granted token: " << m_google.token();
+//        auto reply = m_google.get(QUrl("https://www.googleapis.com/plus/v1/people/me"));
+//        HttpSinglton::instance()->requestFunction(reply, [](ResponsePtr response){
+//            qDebug() << response->isError << response->errorString;
+//        });
 
     });
 

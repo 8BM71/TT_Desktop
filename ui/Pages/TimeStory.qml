@@ -15,11 +15,6 @@ Item {
 
     property var projectModel
 
-    DelegateModel {
-        id: visualModel
-        model: root.timeEntryModel
-    }
-
     ListView {
         id: timeLineView
         anchors {

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.3
 
+
 import "qrc:/Pages"
 import "qrc:/Components"
 
@@ -17,7 +18,7 @@ ApplicationWindow {
 
     title: Application.name
 
-    property bool logined: true
+    property bool logined: false//true
     property alias settings: settingsItem
 
     Material.theme: settings.theme
@@ -106,10 +107,10 @@ ApplicationWindow {
     Component {
         id: startPageComponent
         Start {
-            Label {
-                anchors.centerIn: parent
-                text: parent.objectName
-            }
+//            Label {
+//                anchors.centerIn: parent
+//                text: parent.objectName
+//            }
             onLogined: {
                 if(startPage)
                     startPage.destroy()
