@@ -37,6 +37,7 @@ artifacts:
     name: installer
 
 deploy:
+  tag: $(appveyor_repo_tag_name) 
   release: $(appveyor_project_name)-v$(appveyor_build_version)
   description: 'Auto release on tag'
   provider: GitHub
@@ -46,5 +47,6 @@ deploy:
   auth_token:
     secure: +I1mbAzf5mFFmAHuGk/fgqd2RWhOQZzen5MRGXYyqZ+dFi5Px2JsPOj/4BGQ4Wl8
   on:
-    branch: develop
+    tags: true 
+    branch: master
     appveyor_repo_tag: true
