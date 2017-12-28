@@ -7,9 +7,10 @@ environment:
   VSPATH: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
   TOOLSDIR: C:\Qt\Tools\QtCreator
   INSTALLER_NAME: "%APPVEYOR_PROJECT_NAME%%APPVEYOR_BUILD_VERSION%"
+  INNOSETUPPATH: C:\Program Files (x86)\Inno Setup 5\
 
 before_build:
-  - set PATH=%PATH%;%QTDIR%\bin;%VSPATH%\bin;%TOOLSDIR%\bin
+  - set PATH=%PATH%;%QTDIR%\bin;%VSPATH%\bin;%TOOLSDIR%\bin;%INNOSETUPPATH%
   - call "%VSPATH%\vcvarsall.bat"
   - mkdir build
 
@@ -22,7 +23,7 @@ after_build:
   - windeployqt --release %APPVEYOR_BUILD_FOLDER%\bin\release --qmldir %APPVEYOR_BUILD_FOLDER%
   - xcopy C:\OpenSSL-Win32\bin\libeay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
   - xcopy C:\OpenSSL-Win32\bin\ssleay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
-  - iscc "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
+  - iscc.exe "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
   - 7z a -y ..\bin\installs\tttpu.zip %APPVEYOR_BUILD_FOLDER%\bin\release\*
 
 artifacts:
