@@ -16,3 +16,10 @@ build_script:
   - cd build
   - qmake ../tputt.pro -spec win32-msvc
   - jom
+
+after_build:
+  - windeployqt --release %APPVEYOR_BUILD_FOLDER%\bin\release --qmldir %APPVEYOR_BUILD_FOLDER%
+  - 7z a -y tttpu.zip %APPVEYOR_BUILD_FOLDER%\bin\release\*
+
+artifacts:
+  - path: tttpu.zip
