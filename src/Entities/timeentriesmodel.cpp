@@ -48,6 +48,45 @@ QVariant TimeEntriesModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool TimeEntriesModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    auto item = m_items[index.row()];
+    switch (role) {
+        case TaskId:{
+            item->taskId = value.toString();
+            emit dataChanged(index, index, QVector<int>() << TaskId);
+            return true;
+        }
+        case DurationRole:{
+            item->duration = value.toString();
+            emit dataChanged(index, index, QVector<int>() << DurationRole);
+            return true;
+        }
+        case StartDateRole:{
+            item->startDate = value.toString();
+            emit dataChanged(index, index, QVector<int>() << StartDateRole);
+            return true;
+        }
+        case EndDateRole:{
+            item->endDate = value.toString();
+            emit dataChanged(index, index, QVector<int>() << EndDateRole);
+            return true;
+        }
+        case StartTimeRole:{
+            item->startTime = value.toString();
+            emit dataChanged(index, index, QVector<int>() << StartTimeRole);
+            return true;
+        }
+        case EndTimeRole:{
+            item->endTime = value.toString();
+            emit dataChanged(index, index, QVector<int>() << EndTimeRole);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 QHash<int, QByteArray> TimeEntriesModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -134,9 +173,7 @@ void TimeEntriesModel::removeItem(const int index)
     emit countChanged(count());
 }
 
-}
-
-void Entities::TimeEntriesModel::sort(int column, Qt::SortOrder order)
+void TimeEntriesModel::sort(int column, Qt::SortOrder order)
 {
     Q_UNUSED(column)
     std::sort(m_items.begin(), m_items.end(), [&order](TimeEntryPtr a, TimeEntryPtr b){
@@ -144,3 +181,17 @@ void Entities::TimeEntriesModel::sort(int column, Qt::SortOrder order)
                                            : a->startMSecsSinceEpoch > b->startMSecsSinceEpoch;
     });
 }
+
+int TimeEntriesModel::getIndex(const QString &id)
+{
+    for(int i = 0; i < count(); i++)
+    {
+        if(m_items[i]->id == id)
+            return i;
+    }
+
+    return -1;
+}
+
+}
+

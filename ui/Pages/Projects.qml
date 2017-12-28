@@ -310,7 +310,7 @@ Item {
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
-                        core.updateProject(newNameTextField.text, renameProjectDialogItem.projectId)
+                        core.updateProject(renameProjectDialogItem.projectId, newNameTextField.text)
                     }
                 }
             }

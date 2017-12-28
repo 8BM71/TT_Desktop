@@ -105,7 +105,7 @@ public slots:
 
     void moveProjectToWorkspace();
 
-    void updateProject();
+    void updateProject(const QString &id, const QString &name);
 
     void deleteProject(const QString &projectId);
 
@@ -116,7 +116,7 @@ public slots:
     // Workspace methods
     void createNewWorkspace(const QString &name);
 
-    void updateWorkspace();
+    void updateWorkspace(const QString &id, const QString &name);
 
     void deleteWorkspace(const QString &workspaceId);
 
@@ -142,7 +142,6 @@ protected:
 
 private:
     void updateAll();
-
 
     void updateTimerDuration();
 

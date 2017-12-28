@@ -228,9 +228,20 @@ void LogicCore::moveProjectToWorkspace()
     //TODO: implement
 }
 
-void LogicCore::updateProject()
+void LogicCore::updateProject(const QString &id, const QString &name)
 {
-    //TODO: implement
+    QVariantMap params;
+    params.insert(m_projectModel->roleNames().value(ProjectsModel::Roles::ItemIdRole), id);
+    params.insert(m_projectModel->roleNames().value(ProjectsModel::Roles::NameRole), name);
+
+    m_projService.updateProject(id, params,[this, params](bool success, QString info){
+        if(success) {
+            int ind = m_projectModel->getIndex(params["itemId"].toString());
+
+            QModelIndex index = m_projectModel->index(ind);
+            m_projectModel->setData(index,params["name"],ProjectsModel::Roles::NameRole);
+        }
+    });
 }
 
 void LogicCore::deleteProject(const QString &projectId)
@@ -262,9 +273,20 @@ void LogicCore::createNewWorkspace(const QString &name)
     });
 }
 
-void LogicCore::updateWorkspace()
+void LogicCore::updateWorkspace(const QString &id, const QString &name)
 {
-    //TODO: implement
+    QVariantMap params;
+    params.insert(m_workspacesModel->roleNames().value(WorkspacesModel::Roles::NameRole),name);
+    params.insert("description",""); //TODO: implement
+
+    m_wsService.updateWorkspace(id, params, [this, id, params](bool success, QString info){
+        if(success) {
+            int ind = m_workspacesModel->getIndex(id);
+            QModelIndex index = m_workspacesModel->index(ind);
+            m_workspacesModel->setData(index,params["name"],WorkspacesModel::Roles::NameRole);
+            //m_workspacesModel->setData(index,params["description"],WorkspacesModel::Roles::DescriptionRole);
+        }
+    });
 }
 
 void LogicCore::deleteWorkspace(const QString &workspaceId)

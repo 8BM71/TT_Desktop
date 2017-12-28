@@ -107,7 +107,8 @@ void WorkspaceWebService::updateWorkspace(const QString &id, const QVariantMap &
         {"ws",
             QJsonObject {
                 {"name", params["name"].toString()},
-                {"description", params["description"].toString()}
+                {"description", params["description"].toString()},
+                {"ownerId", params["ownerId"].toString()} //TODO: Fix
             }
         }
     };
@@ -124,32 +125,30 @@ void WorkspaceWebService::updateWorkspace(const QString &id, const QVariantMap &
                         .object()
                         .value("data")
                         .toObject(QJsonObject());
+
                 if (!dataObject.isEmpty())
                 {
                     if(dataObject.value("updateWorkspace").toBool(false))
                         successCallback(true, "Ok");
-                    else
-                    {
-                        QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
-                                .object()
-                                .value("errors")
-                                .toArray(QJsonArray());
-
-                        if(!errorArray.isEmpty())
-                        {
-                            QJsonObject errorObject = errorArray[0].toObject();
-                            QString message = errorObject.value("message").toString("Some error");
-                            successCallback(false, message);
-                        }
-                        else
-                        {
-                            successCallback(false, "Some error");
-                        }
-                    }
                 }
                 else
-                    successCallback(false, "Incorrect response from server");
+                {
+                    QJsonArray errorArray = QJsonDocument::fromJson(resp->data)
+                            .object()
+                            .value("errors")
+                            .toArray(QJsonArray());
 
+                    if(!errorArray.isEmpty())
+                    {
+                        QJsonObject errorObject = errorArray[0].toObject();
+                        QString message = errorObject.value("message").toString("Some error");
+                        successCallback(false, message);
+                    }
+                    else
+                    {
+                        successCallback(false, "Some error");
+                    }
+                }
             }
             else
                 successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));

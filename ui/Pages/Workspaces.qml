@@ -210,7 +210,7 @@ Item {
                     DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
                     onClicked: {
-                        core.updateWorkspace(newNameTextField.text, renameDialogItem.workspaceId)
+                        core.updateWorkspace(renameDialogItem.workspaceId, newNameTextField.text)
                     }
                 }
             }
