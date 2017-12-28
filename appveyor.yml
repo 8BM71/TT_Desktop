@@ -26,7 +26,7 @@ after_build:
   - windeployqt --release %APPVEYOR_BUILD_FOLDER%\bin\release --qmldir %APPVEYOR_BUILD_FOLDER%
   - xcopy C:\OpenSSL-Win32\bin\libeay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
   - xcopy C:\OpenSSL-Win32\bin\ssleay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
-  - iscc.exe /DAPPVEYOR_PROJECT_NAME=%PR_NAME% /DAPPVEYOR_BUILD_VERSION=%BUILD_V% /DINSTALLER_NAME=%INSTALLER_NAME% /DAPPVEYOR_BUILD_FOLDER=%BUILD_F% "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
+  - iscc.exe /Qp /DAPPVEYOR_PROJECT_NAME=%PR_NAME% /DAPPVEYOR_BUILD_VERSION=%BUILD_V% /DINSTALLER_NAME=%INSTALLER_NAME% /DAPPVEYOR_BUILD_FOLDER=%BUILD_F% "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
   - 7z a -y ..\bin\installs\tttpu.zip %APPVEYOR_BUILD_FOLDER%\bin\release\*
 
 artifacts:
@@ -36,12 +36,12 @@ artifacts:
   - path: bin/installs/%INSTALLER_NAME%.exe
     name: installer
 
-deploy:
-  release: v$(appveyor_project_name)-v$(appveyor_build_version)
-  provider: GitHub
-  artifact: installer
-  prerelease: true
-  auth_token:
-    secure: +I1mbAzf5mFFmAHuGk/fgqd2RWhOQZzen5MRGXYyqZ+dFi5Px2JsPOj/4BGQ4Wl8
-  on:
-    branch: develop
+# deploy:
+#   release: $(appveyor_project_name)-v$(appveyor_build_version)
+#   provider: GitHub
+#   artifact: installer
+#   prerelease: true
+#   auth_token:
+#     secure: +I1mbAzf5mFFmAHuGk/fgqd2RWhOQZzen5MRGXYyqZ+dFi5Px2JsPOj/4BGQ4Wl8
+#   on:
+#     branch: develop
