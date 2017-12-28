@@ -21,7 +21,7 @@ after_build:
   - windeployqt --release %APPVEYOR_BUILD_FOLDER%\bin\release --qmldir %APPVEYOR_BUILD_FOLDER%
   - xcopy C:\OpenSSL-Win32\bin\libeay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
   - xcopy C:\OpenSSL-Win32\bin\ssleay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
-  - 7z a -y tttpu.zip '%APPVEYOR_BUILD_FOLDER%\bin\release\*'
+  - 7z a -y tttpu.zip %APPVEYOR_BUILD_FOLDER%\bin\release\*
 
 artifacts:
   - path: build/tttpu.zip
