@@ -12,28 +12,29 @@
 const QUrl authUri("https://accounts.google.com/o/oauth2/auth");
 const QUrl tokenUri("https://accounts.google.com/o/oauth2/token");
 const QUrl redirectUri("http://localhost:8080/cb");
-const QString clientId("762893916605-obrrt1mrp48qa8ev8npqbn83kl8vadq9.apps.googleusercontent.com");
-const QString clientSecret("4K4JqGv0ZJa0hdakuJBArn5K");
+const QString clientId("68255243973-9h8rb8mq10kq00a2830eetktipe1miab.apps.googleusercontent.com");
+const QString clientSecret("CZ4m2O8togWdDCXeQGK4Mj2Y");
 
 AppWebService::AppWebService(QObject *parent) : QObject(parent)
 {
-    auto replyHandler = new QOAuthHttpServerReplyHandler(static_cast<quint16>(redirectUri.port()), this);
-    replyHandler->setCallbackPath("cb");
+    auto replyHandler = new GoogleQOAuthHttpServerReplyHandler(static_cast<quint16>(redirectUri.port()), this);
+//    replyHandler->setCallbackPath("cb");
     m_google.setReplyHandler(replyHandler);
     m_google.setAuthorizationUrl(authUri);
     m_google.setClientIdentifier(clientId);
     m_google.setAccessTokenUrl(tokenUri);
     m_google.setClientIdentifierSharedKey(clientSecret);
-    m_google.setScope("email profile");
+    m_google.setScope("profile email");
+
 
     connect(&m_google, &QOAuth2AuthorizationCodeFlow::statusChanged, [=](QAbstractOAuth::Status status){
         if (status == QAbstractOAuth::Status::Granted)
-            qDebug() << "Granted token: " << m_google.token();
-//        auto reply = m_google.get(QUrl("https://www.googleapis.com/plus/v1/people/me"));
-//        HttpSinglton::instance()->requestFunction(reply, [](ResponsePtr response){
-//            qDebug() << response->isError << response->errorString;
-//        });
-
+        {
+//            qDebug() << "Granted token: " << m_google.token();
+            auto handler = dynamic_cast<GoogleQOAuthHttpServerReplyHandler*>(m_google.replyHandler());
+            this->m_idToken = handler->idToken();
+            this->auth();
+        }
     });
 
     connect(&m_google, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
@@ -209,6 +210,55 @@ void AppWebService::updateAllEntities(const QString &ownerId, WorkspacesModelPtr
                 successCallback(false, QString("Request status not OK, status code:%0").arg(resp->statusCode));
         }
     });
+}
+
+void AppWebService::auth()
+{
+    QString query = QString("mutation M ($token: String!){"
+                                "auth(token: $token) {"
+                                    "id username email}"
+                            "}");
+
+    QJsonObject authParams {
+        {"token", m_idToken}
+    };
+
+    HttpSinglton::instance()->postRequest(query, [this](ResponsePtr resp) {
+        if (resp->isError)
+        {
+            emit this->authorizedFailed(resp->errorString);
+        }
+        else
+        {
+            if (resp->statusCode == 200)
+            {
+                QJsonObject dataObject = QJsonDocument::fromJson(resp->data)
+                        .object()
+                        .value("data")
+                        .toObject(QJsonObject());
+                if (!dataObject.isEmpty())
+                {
+                    QJsonObject resultObject = dataObject.value("auth").toObject(QJsonObject());
+                    if (!resultObject.isEmpty())
+                    {
+                        QString id = resultObject.value("id").toString("");
+                        QString username = resultObject.value("username").toString();
+                        QString email = resultObject.value("email").toString();
+
+//                        qDebug() << "id" << id;
+//                        qDebug() << "username" << username;
+//                        qDebug() << "email" << email;
+
+                        emit this->authorizedSuccess(id, username, email);
+                    }
+                }
+                else
+                    emit this->authorizedFailed("Incorrect response from server");
+            }
+            else
+                emit this->authorizedFailed(QString("Request status not OK, status code:%0").arg(resp->statusCode));
+        }
+    }, authParams);
 }
 
 void AppWebService::authorizeWithGoogle()

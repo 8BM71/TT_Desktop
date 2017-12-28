@@ -17,12 +17,14 @@ Page {
             anchors.fill: parent
             clip: true
 
+            visible: root.state != "Hidden"
+
             Image {
                 id: userImageIcon
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                width: height
+                width: 0//height
                 anchors.margins: 5 /** uiScale.xScale*/
 
                 visible: false
@@ -52,7 +54,7 @@ Page {
                     top: parent.top
                     bottom: parent.bottom
                     right: parent.right
-                    leftMargin: 18
+                    leftMargin: 10
                     topMargin: 10
                     bottomMargin: 10
                 }
@@ -60,11 +62,13 @@ Page {
 
                 Label {
                     id: username
-                    text: "name"
+                    text: core.userName
+                    font.pixelSize: 13
                 }
                 Label {
                     id: useremail
-                    text: qsTr("email") + translator.trString
+                    text: core.userEmail
+                    font.pixelSize: 13
                 }
             }
         }

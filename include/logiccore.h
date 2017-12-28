@@ -32,6 +32,9 @@ class LogicCore : public QObject
     Q_PROPERTY(bool projectsLoading READ projectsLoading NOTIFY projectsLoadingChanged)
     Q_PROPERTY(bool tasksLoading READ tasksLoading NOTIFY tasksLoadingChanged)
 
+    Q_PROPERTY(QString userName READ userName NOTIFY userNameChanged)
+    Q_PROPERTY(QString userEmail READ userEmail NOTIFY userEmailChanged)
+
 public:
     explicit LogicCore(QObject *parent = nullptr);
     ~LogicCore();
@@ -56,6 +59,10 @@ public:
 
     QVariantMap currentTask() const;
 
+    QString userName() const;
+
+    QString userEmail() const;
+
 signals:
     void workspacesModelChanged();
 
@@ -76,6 +83,12 @@ signals:
     void tasksLoadingChanged(bool tasksLoading);
 
     void currentTaskChanged(QVariantMap currentTask);
+
+    void logined();
+
+    void userNameChanged();
+
+    void userEmailChanged();
 
 public slots:
 
@@ -139,6 +152,11 @@ public slots:
 
 protected:
     void timerEvent(QTimerEvent *event);
+
+private slots:
+    void onAuthorizedSuccess(const QString &id, const QString &username, const QString &email);
+
+    void onAuthorizedFailed(const QString &errorString);
 
 private:
     void updateAll();

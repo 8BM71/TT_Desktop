@@ -23,11 +23,8 @@ LogicCore::LogicCore(QObject *parent)
     m_tasksModel = std::make_shared<TasksModel>();
     m_timeEntriesModel = std::make_shared<TimeEntriesModel>();
 
-    m_currentUser->id = "e093e100-82aa-43a5-ba97-2812c710f716";
-    updateAll();
-    //    m_webService.createUser("user", "user12@mail.ru", m_currentUser, [this](bool success, QString info){
-    //        qCDebug(logicCore) << QString("Create user success: %0, info: %1").arg(success).arg(info);
-    //    });
+    connect(&m_appService, &AppWebService::authorizedSuccess, this, &LogicCore::onAuthorizedSuccess);
+    connect(&m_appService, &AppWebService::authorizedFailed, this, &LogicCore::onAuthorizedFailed);
 }
 
 LogicCore::~LogicCore()
@@ -92,6 +89,16 @@ QVariantMap LogicCore::currentTask() const
     task.insert(m_tasksModel->roleNames().value(TasksModel::Roles::DescriptionRole), m_currentTask->description);
 
     return task;
+}
+
+QString LogicCore::userName() const
+{
+    return m_currentUser->name;
+}
+
+QString LogicCore::userEmail() const
+{
+    return m_currentUser->email;
 }
 
 void LogicCore::siginWithGoogle()
@@ -389,6 +396,24 @@ void LogicCore::timerEvent(QTimerEvent *event)
     {
         updateTimerDuration();
     }
+}
+
+void LogicCore::onAuthorizedSuccess(const QString &id, const QString &username, const QString &email)
+{
+    qCDebug(logicCore) << "Authorization success";
+    m_currentUser->id = id;
+    if (username.contains('@') && username.endsWith(".com"))
+        m_currentUser->name = username.split("@").first();
+    m_currentUser->email = email;
+    updateAll();
+    emit this->logined();
+    emit this->userNameChanged();
+    emit this->userEmailChanged();
+}
+
+void LogicCore::onAuthorizedFailed(const QString &errorString)
+{
+    qCDebug(logicCore) << "Authorization failed" << errorString;
 }
 
 void LogicCore::updateAll()
