@@ -22,7 +22,7 @@ after_build:
   - windeployqt --release %APPVEYOR_BUILD_FOLDER%\bin\release --qmldir %APPVEYOR_BUILD_FOLDER%
   - xcopy C:\OpenSSL-Win32\bin\libeay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
   - xcopy C:\OpenSSL-Win32\bin\ssleay32.dll %APPVEYOR_BUILD_FOLDER%\bin\release /y
-  - "C:\Program Files (x86)\Inno Setup 5\iscc.exe" "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
+  - C:\Program Files (x86)\Inno Setup 5\iscc.exe "%APPVEYOR_BUILD_FOLDER%\.appveyor\installer.iss"
   - 7z a -y ..\bin\installs\tttpu.zip %APPVEYOR_BUILD_FOLDER%\bin\release\*
 
 artifacts:
