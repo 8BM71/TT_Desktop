@@ -36,12 +36,15 @@ artifacts:
   - path: bin/installs/%INSTALLER_NAME%.exe
     name: installer
 
-# deploy:
-#   release: $(appveyor_project_name)-v$(appveyor_build_version)
-#   provider: GitHub
-#   artifact: installer
-#   prerelease: true
-#   auth_token:
-#     secure: +I1mbAzf5mFFmAHuGk/fgqd2RWhOQZzen5MRGXYyqZ+dFi5Px2JsPOj/4BGQ4Wl8
-#   on:
-#     branch: develop
+deploy:
+  release: $(appveyor_project_name)-v$(appveyor_build_version)
+  description: 'Auto release on tag'
+  provider: GitHub
+  artifact: installer
+  prerelease: true
+  draft: true
+  auth_token:
+    secure: +I1mbAzf5mFFmAHuGk/fgqd2RWhOQZzen5MRGXYyqZ+dFi5Px2JsPOj/4BGQ4Wl8
+  on:
+    branch: develop
+    appveyor_repo_tag: true
