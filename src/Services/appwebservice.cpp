@@ -18,7 +18,7 @@ const QString clientSecret("CZ4m2O8togWdDCXeQGK4Mj2Y");
 AppWebService::AppWebService(QObject *parent) : QObject(parent)
 {
     auto replyHandler = new GoogleQOAuthHttpServerReplyHandler(static_cast<quint16>(redirectUri.port()), this);
-//    replyHandler->setCallbackPath("cb");
+    replyHandler->setCallbackPath("cb");
     m_google.setReplyHandler(replyHandler);
     m_google.setAuthorizationUrl(authUri);
     m_google.setClientIdentifier(clientId);

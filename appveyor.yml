@@ -5,6 +5,8 @@ branches:
   only:
   - develop
 
+skip_tags: true
+
 environment:
   QTDIR: C:\Qt\5.9.2\msvc2015
   VSPATH: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
