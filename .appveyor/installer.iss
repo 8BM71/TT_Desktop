@@ -6,7 +6,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={C8D0FDAB-EE09-4C39-AFFA-93C69820DEB9}
+AppId={{C8D0FDAB-EE09-4C39-AFFA-93C69820DEB9}
 AppName={#APPVEYOR_PROJECT_NAME}
 AppVersion={#APPVEYOR_BUILD_VERSION}
 AppVerName={#INSTALLER_NAME}
@@ -28,13 +28,13 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "bin\release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: {#APPVEYOR_BUILD_FOLDER}\bin\release\*; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{commonprograms}\{#APPVEYOR_PROJECT_NAME}"; Filename: "{app}\TTTPU\{#MyAppExeName}"
-Name: "{commondesktop}\{#APPVEYOR_PROJECT_NAME}"; Filename: "{app}\TTTPU\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{commonprograms}\{#APPVEYOR_PROJECT_NAME}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{commondesktop}\{#APPVEYOR_PROJECT_NAME}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\TTTPU\{#MyAppExeName}"; WorkingDir: "{app}\TTTPU"; Description: "{cm:LaunchProgram,{#StringChange(INSTALLER_NAME, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#StringChange(INSTALLER_NAME, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
